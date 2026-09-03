@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Amazing Grace Ministries MN — Website
 
-## Getting Started
+The website for Amazing Grace Ministries, a Christ-centered church in Saint Paul, Minnesota.
+Production domain: **amazinggracemn.org**
 
-First, run the development server:
+- **Framework:** Next.js 16 (App Router) + React 19, TypeScript strict
+- **Styling:** Tailwind CSS v4 (CSS-first config — all tokens live in `app/globals.css`, there is no `tailwind.config.js`)
+- **Icons:** lucide-react
+- **Backend (planned phases):** Firebase (Auth, Firestore, Storage) + Stripe, running as Next.js route handlers on Vercel
+
+> **Note for contributors:** this Next.js version has breaking changes versus older
+> training data. Read the relevant guide in `node_modules/next/dist/docs/` before
+> writing route handlers, server actions, middleware, metadata, or caching code.
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Other scripts:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build      # production build
+npm run lint       # eslint
+node scripts/screenshot.mjs <url> <out.png> [light|dark] [w] [h] [fullpage]  # design review helper
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Design system
 
-## Learn More
+Everything is built from the tokens in `app/globals.css` — **read it before writing any CSS**.
 
-To learn more about Next.js, take a look at the following resources:
+- **Semantic colors only.** Components use `bg-surface`, `bg-surface-raised`, `text-text-primary`, `text-accent`, `border-border-subtle`, etc. Both themes (warm paper light / dim sanctuary dark) are defined once in `:root` / `.dark`. Do **not** write `dark:` variants for color, and do not reference raw brand colors (`gold`, `dark-*`, `light-*`) in components.
+- **Type scale only.** `text-display-xl` → `text-caption` plus the `eyebrow` utility. Arbitrary `text-[Npx]` classes are banned — CI should grep clean for `text-\[[0-9]+px\]`.
+- **Primitives** in `components/ui/` (Button, Input, Dialog, Drawer, Tabs, Toast, Reveal, …) and **section archetypes** in `components/layout/` (Section, SectionHeading, SplitSection, FullBleed, PullQuote, ScrollRail). Vary section archetypes; no two adjacent sections may share one.
+- **Motion** is defined globally: `.reveal` / `.is-visible` (fade + 14px rise, expo-out, trigger-once) via `components/ui/Reveal.tsx`; `prefers-reduced-motion` is honored in the base layer.
+- **Review artifact:** `/styleguide` (noindex) renders every token and primitive in both themes. Keep it current.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Theming
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Three states — light / dark / system — persisted to `localStorage['agm-theme']`, defaulting to
+system. An inline script in `app/layout.tsx` applies the resolved theme before first paint;
+`components/ThemeProvider.tsx` owns it after hydration.
 
-## Deploy on Vercel
+## Environment variables
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Copy `.env.example` to `.env.local`. Server-side secrets (Firebase Admin, Stripe secret/webhook
+keys, Resend) must never be exposed to the client or committed. All env vars are validated at
+startup by a Zod schema (`lib/env.ts`) that fails loudly by name.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Architecture (target, phased)
+
+- **Vercel** hosts the Next.js app; **Firebase** provides Auth (Google + email magic link),
+  Firestore (native mode, us-central1, deny-by-default rules), and Storage.
+- **Stripe** handles donations (embedded Payment Element) and merch (hosted Checkout).
+  Donations/orders/inventory are written **only** by the Stripe webhook
+  (`/api/stripe/webhook`), idempotently keyed on the Stripe event ID. Amounts are integer cents.
+- Data model, security rules, and quality bars are specified in `AGM_BUILD_PROMPT.md`
+  (repo root of the project workspace).
+
+### Stripe local development
+
+```bash
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+# copy the printed whsec_... into STRIPE_WEBHOOK_SECRET in .env.local
+```
+
+Use Stripe test-mode keys throughout development; test card `4242 4242 4242 4242`.
+
+## Deployment
+
+Deployed on Vercel from the `main` branch of
+`amazinggracechurch/amazing-grace-ministries-site`. Set all env vars from `.env.example`
+in the Vercel project settings. The production domain is `amazinggracemn.org`.

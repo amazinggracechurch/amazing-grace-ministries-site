@@ -1,0 +1,16 @@
+{
+  "name": "Amazing Grace Ministries MN",
+  "short_name": "AGM MN",
+  "description": "A Christ-centered church in Saint Paul, Minnesota. Sundays at 10:00 AM.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#14110d",
+  "theme_color": "#14110d",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}
