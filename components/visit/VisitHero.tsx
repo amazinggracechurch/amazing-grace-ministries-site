@@ -15,7 +15,7 @@ export default function VisitHero() {
         {/* Production Image:
         */}
         <Image
-          src="/images/img4.jpg"
+          src="/images/worship-band-bw.jpg"
           alt="Plan Your Visit Hero Image"
           fill
           priority

@@ -428,7 +428,7 @@ export default function StyleguideClient() {
                     padded={false}
                     media={
                       <Image
-                        src="/images/img1.jpg"
+                        src="/images/hero-worship.jpg"
                         alt="Congregation gathered on a Sunday morning"
                         width={800}
                         height={450}

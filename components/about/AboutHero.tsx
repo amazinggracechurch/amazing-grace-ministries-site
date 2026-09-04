@@ -15,7 +15,7 @@ export default function AboutHero() {
         {/* Production Image:
         */}
         <Image
-          src="/images/img3.jpg"
+          src="/images/hero-stage.jpg"
           alt="Amazing Grace Ministries Church Community"
           fill
           priority

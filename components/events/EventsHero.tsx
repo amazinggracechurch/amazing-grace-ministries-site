@@ -17,7 +17,7 @@ export default function EventsHero() {
         {/* Production Image:
         */}
         <Image
-          src="/images/img1.jpg"
+          src="/images/hero-worship.jpg"
           alt="Events Hero Image"
           fill
           priority

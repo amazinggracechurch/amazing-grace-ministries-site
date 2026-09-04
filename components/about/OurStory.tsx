@@ -18,7 +18,7 @@ export default function OurStory() {
             {/* Production Image:
             */}
             <Image
-              src="/images/banner.jpg"
+              src="/images/hero-worship.jpg"
               alt="Amazing Grace Ministries community gathering"
               fill
               className="object-cover"

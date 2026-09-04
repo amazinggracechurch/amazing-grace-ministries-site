@@ -44,7 +44,7 @@ export default function ImpactSection() {
             {/* Production Image:
             */}
             <Image
-              src="/images/img4.jpg"
+              src="/images/worship-band-bw.jpg"
               alt="Community impact illustration image"
               fill
               className="object-cover"

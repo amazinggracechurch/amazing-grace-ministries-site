@@ -37,14 +37,14 @@ export const metadata: Metadata = {
     title: "Amazing Grace Ministries MN — A Church in Saint Paul, Minnesota",
     description:
       "A Christ-centered church in Saint Paul, Minnesota. Sundays at 10:00 AM — 715 Edgerton Street, Saint Paul, MN 55130.",
-    images: [{ url: "/images/banner.jpg", width: 1200, height: 630, alt: "Amazing Grace Ministries MN" }],
+    images: [{ url: "/images/hero-worship.jpg", width: 1200, height: 630, alt: "Amazing Grace Ministries MN" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Amazing Grace Ministries MN",
     description:
       "A Christ-centered church in Saint Paul, Minnesota. Sundays at 10:00 AM.",
-    images: ["/images/banner.jpg"],
+    images: ["/images/hero-worship.jpg"],
   },
   manifest: "/manifest.json",
 };

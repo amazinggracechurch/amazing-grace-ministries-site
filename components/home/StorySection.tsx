@@ -43,8 +43,8 @@ export default function StorySection() {
           <Reveal delay={1}>
             <div className="relative aspect-[4/5] overflow-hidden">
               <Image
-                src="/images/img2.jpg"
-                alt="The worship team of Amazing Grace Ministries leading the congregation in song"
+                src="/images/community-choir.jpg"
+                alt="The choir of Amazing Grace Ministries leading the congregation in song"
                 fill
                 sizes="(min-width: 1024px) 40vw, 100vw"
                 className="object-cover transition-transform duration-500 hover:scale-[1.03]"

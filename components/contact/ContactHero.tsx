@@ -17,7 +17,7 @@ export default function ContactHero() {
         {/* Production Image:
         */}
         <Image
-          src="/images/img3.jpg"
+          src="/images/hero-stage.jpg"
           alt="Contact Us Hero Image"
           fill
           priority

@@ -43,8 +43,8 @@ export default function SermonHighlight() {
             aria-label="Watch the latest message on YouTube"
           >
             <Image
-              src="/images/img5.jpg"
-              alt="Pastor Nnaemeka Uchegbu preaching during a service"
+              src="/images/sermon-pulpit.jpg"
+              alt="Pastor Nnaemeka Uchegbu preaching from the stage during a service"
               fill
               sizes="(min-width: 1024px) 58vw, 100vw"
               className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"

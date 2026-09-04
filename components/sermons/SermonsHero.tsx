@@ -15,7 +15,7 @@ export default function SermonsHero() {
         {/* Production Image:
         */}
         <Image
-          src="/images/img5.jpg"
+          src="/images/sermon-pulpit.jpg"
           alt="Sermons Library Hero Image"
           fill
           priority

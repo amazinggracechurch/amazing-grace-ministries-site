@@ -17,7 +17,7 @@ export default function GiveHero() {
         {/* Production Image:
         */}
         <Image
-          src="/images/img4.jpg"
+          src="/images/worship-band-bw.jpg"
           alt="Generosity and Giving Hero Image"
           fill
           priority

@@ -9,8 +9,8 @@ import Reveal from '@/components/ui/Reveal'
 export default function GivingBand() {
   return (
     <FullBleed
-      src="/images/img4.jpg"
-      alt="The congregation in worship with hands lifted, in black and white"
+      src="/images/worship-band-bw.jpg"
+      alt="The church band — keys, guitar, and saxophone — leading worship, in black and white"
       height="band"
     >
       <Reveal>

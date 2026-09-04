@@ -1,26 +1,70 @@
+'use client'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Play } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/ui/Reveal'
 import { site } from '@/lib/site'
+import { cn } from '@/lib/cn'
+
+const slides = [
+  {
+    src: '/images/hero-worship.jpg',
+    alt: 'A worship leader singing with joy as the congregation celebrates',
+  },
+  {
+    src: '/images/hero-stage.jpg',
+    alt: 'Women of the church leading worship from the stage',
+  },
+  {
+    src: '/images/hero-preaching.jpg',
+    alt: 'Pastor Nnaemeka Uchegbu preaching as the congregation raises their hands',
+  },
+]
+
+const INTERVAL_MS = 6500
 
 /**
- * Full-bleed photographic hero. One headline, one primary CTA, one
- * secondary. The ken-burns drift is the page's single continuous
- * animation; the overlay exists only for legibility.
+ * Full-bleed photographic hero with a three-slide crossfade carousel.
+ * The headline and CTAs stay constant — only the photography rotates.
+ * Auto-advance pauses on hover/focus and is disabled entirely under
+ * prefers-reduced-motion.
  */
 export default function HomeHero() {
+  const [active, setActive] = useState(0)
+  const [paused, setPaused] = useState(false)
+
+  useEffect(() => {
+    if (paused) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const id = setInterval(() => setActive((i) => (i + 1) % slides.length), INTERVAL_MS)
+    return () => clearInterval(id)
+  }, [paused])
+
   return (
-    <section className="relative isolate flex min-h-svh items-end overflow-hidden bg-black">
-      <Image
-        src="/images/img1.jpg"
-        alt="The congregation of Amazing Grace Ministries worshipping with raised hands"
-        fill
-        priority
-        sizes="100vw"
-        className="ken-burns -z-10 object-cover"
-      />
+    <section
+      className="relative isolate flex min-h-svh items-end overflow-hidden bg-black"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+    >
+      {slides.map((slide, i) => (
+        <Image
+          key={slide.src}
+          src={slide.src}
+          alt={slide.alt}
+          fill
+          priority={i === 0}
+          sizes="100vw"
+          aria-hidden={i !== active}
+          className={cn(
+            '-z-10 object-cover transition-opacity duration-1000',
+            i === active ? 'ken-burns opacity-100' : 'opacity-0'
+          )}
+        />
+      ))}
       <div
         aria-hidden
         className="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 via-black/30 to-black/40"
@@ -58,9 +102,27 @@ export default function HomeHero() {
           </div>
         </Reveal>
         <Reveal delay={3}>
-          <p className="mt-10 text-body-sm font-semibold tracking-wide text-white/70">
-            Sundays 10:00 AM · {site.address.street}, {site.address.city}, {site.address.state}
-          </p>
+          <div className="mt-10 flex flex-wrap items-center justify-between gap-4">
+            <p className="text-body-sm font-semibold tracking-wide text-white/70">
+              Sundays 10:00 AM · {site.address.street}, {site.address.city}, {site.address.state}
+            </p>
+            <div className="flex items-center gap-2" role="tablist" aria-label="Hero photographs">
+              {slides.map((slide, i) => (
+                <button
+                  key={slide.src}
+                  type="button"
+                  role="tab"
+                  aria-selected={i === active}
+                  aria-label={`Photo ${i + 1} of ${slides.length}`}
+                  onClick={() => setActive(i)}
+                  className={cn(
+                    'h-0.5 w-10 transition-colors duration-300',
+                    i === active ? 'bg-white' : 'bg-white/35 hover:bg-white/60'
+                  )}
+                />
+              ))}
+            </div>
+          </div>
         </Reveal>
       </div>
     </section>
