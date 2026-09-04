@@ -1,76 +1,42 @@
-import { ChevronDown, Play } from 'lucide-react'
-import Image from 'next/image'
+import { Play } from 'lucide-react'
+import FullBleed from '@/components/layout/FullBleed'
+import Button from '@/components/ui/Button'
+import Reveal from '@/components/ui/Reveal'
 
+/**
+ * Sermons hero — full-bleed pulpit photograph. Carries the page's only h1.
+ */
 export default function SermonsHero() {
   return (
-    <section
-      className="relative min-h-[60vh] flex flex-col items-center justify-center overflow-hidden bg-light-charcoal dark:bg-dark-black"
+    <FullBleed
+      src="/images/sermon-pulpit.jpg"
+      alt="Pastor Nnaemeka Uchegbu preaching from the pulpit during a service"
+      height="tall"
+      priority
     >
-      {/* ===== SERMONS HERO ===== */}
-      {/* Background image layer */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        {/* Placeholder: Gradient background */}
-        <div className="w-full h-full bg-gradient-to-br from-dark-elevated via-dark-section to-dark-black opacity-60" />
-        
-        {/* Production Image:
-        */}
-        <Image
-          src="/images/sermon-pulpit.jpg"
-          alt="Sermons Library Hero Image"
-          fill
-          priority
-          className="object-cover opacity-35"
-        />
-      </div>
-
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/65 z-[1] pointer-events-none" />
-
-      {/* Left side diagonal vector border */}
-      <div
-        className="absolute left-0 top-0 bottom-0 w-[60px] bg-white/[0.03] pointer-events-none z-[2]"
-        style={{ clipPath: 'polygon(0 0, 100% 5%, 100% 95%, 0 100%)' }}
-      />
-
-      {/* Right side diagonal vector border */}
-      <div
-        className="absolute right-0 top-0 bottom-0 w-[60px] bg-white/[0.03] pointer-events-none z-[2]"
-        style={{ clipPath: 'polygon(100% 0, 0 5%, 0 95%, 100% 100%)' }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10 text-center px-6 max-w-4xl mx-auto py-24 reveal">
-        <span className="font-body font-semibold text-[11px] uppercase tracking-[0.2em] text-gold mb-4 block">
-          HOME / SERMONS
-        </span>
-        <h1 className="font-display font-bold text-[44px] md:text-[72px] lg:text-[84px] leading-[1.02] text-white">
-          THE WORD <span className="font-display italic text-gold block">Always Available.</span>
+      <Reveal>
+        <p className="eyebrow text-white/70">Home / Sermons</p>
+        <h1 className="mt-4 max-w-4xl font-display text-display-lg font-light uppercase tracking-display">
+          The Word
+          <span className="block font-medium normal-case italic">Always Available.</span>
         </h1>
-        <div className="w-16 h-[2px] bg-gold mx-auto mt-6 mb-8" />
-        <p className="font-display italic text-[20px] text-white/60">
-          &ldquo;Faith comes by hearing, and hearing by the Word of God.&rdquo; &mdash; Romans 10:17
+      </Reveal>
+      <Reveal delay={1}>
+        <p className="mt-6 max-w-xl font-display text-heading italic text-white/85">
+          &ldquo;Faith comes by hearing, and hearing by the Word of God.&rdquo;
+          <span className="ml-3 align-middle font-body text-body-sm not-italic tracking-wide text-white/60">
+            &mdash; Romans 10:17
+          </span>
         </p>
-
-        {/* Watch latest CTA */}
-        <div className="mt-8">
-          <a
-            href="#latest"
-            className="inline-flex items-center gap-3 bg-gold text-dark-charcoal font-body font-bold text-[13px] uppercase tracking-[0.1em] px-8 py-4 rounded-sm hover:bg-gold-light hover:-translate-y-0.5 transition-all shadow-gold"
-          >
-            <Play className="w-4 h-4 text-dark-charcoal fill-dark-charcoal" />
+      </Reveal>
+      <Reveal delay={2}>
+        <div className="mt-10">
+          <Button href="#latest" size="lg">
+            <Play className="size-4" aria-hidden />
             Watch Latest Sermon
-          </a>
+          </Button>
         </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
-        <span className="font-body text-[11px] uppercase tracking-widest text-white/40">
-          Scroll
-        </span>
-        <ChevronDown className="w-4 h-4 text-gold animate-bounce" />
-      </div>
-    </section>
+      </Reveal>
+    </FullBleed>
   )
 }
-

@@ -1,12 +1,12 @@
 import Navbar from '@/components/Navbar'
+import AnnouncementBar from '@/components/AnnouncementBar'
 import VisitHero from '@/components/visit/VisitHero'
-import ServiceTimes from '@/components/visit/ServiceTimes'
-import LocationMap from '@/components/visit/LocationMap'
 import WhatToExpect from '@/components/visit/WhatToExpect'
+import ServiceTimesBand from '@/components/home/ServiceTimesBand'
+import LocationMap from '@/components/visit/LocationMap'
 import VisitFAQ from '@/components/visit/VisitFAQ'
 import VisitContactCTA from '@/components/visit/VisitContactCTA'
 import Footer from '@/components/Footer'
-import ScrollReveal from '@/components/ScrollReveal'
 
 export const metadata = {
   title: 'Plan Your Visit | Amazing Grace Ministries MN',
@@ -15,17 +15,16 @@ export const metadata = {
 
 export default function PlanYourVisitPage() {
   return (
-    <main>
+    <main className="flex min-h-screen flex-col bg-surface font-body text-text-primary antialiased">
       <Navbar />
+      <AnnouncementBar />
       <VisitHero />
-      <ServiceTimes />
-      <LocationMap />
       <WhatToExpect />
+      <ServiceTimesBand />
+      <LocationMap />
       <VisitFAQ />
       <VisitContactCTA />
       <Footer />
-      <ScrollReveal />
     </main>
   )
 }
-

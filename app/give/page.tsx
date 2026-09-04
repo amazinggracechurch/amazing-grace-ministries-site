@@ -1,12 +1,12 @@
+import AnnouncementBar from '@/components/AnnouncementBar'
+import Footer from '@/components/Footer'
 import Navbar from '@/components/Navbar'
+import GiveFAQ from '@/components/give/GiveFAQ'
 import GiveHero from '@/components/give/GiveHero'
 import GivingForm from '@/components/give/GivingForm'
 import GivingOptions from '@/components/give/GivingOptions'
 import ImpactSection from '@/components/give/ImpactSection'
 import ScriptureSection from '@/components/give/ScriptureSection'
-import GiveFAQ from '@/components/give/GiveFAQ'
-import Footer from '@/components/Footer'
-import ScrollReveal from '@/components/ScrollReveal'
 
 export const metadata = {
   title: 'Give | Amazing Grace Ministries MN',
@@ -15,16 +15,16 @@ export const metadata = {
 
 export default function GivePage() {
   return (
-    <main className="flex flex-col min-h-screen bg-light-white dark:bg-dark-charcoal font-body antialiased transition-colors duration-300">
+    <main className="flex min-h-screen flex-col bg-surface font-body text-text-primary antialiased">
       <Navbar />
+      <AnnouncementBar />
       <GiveHero />
-      <GivingForm />
       <GivingOptions />
+      <GivingForm />
       <ImpactSection />
       <ScriptureSection />
       <GiveFAQ />
       <Footer />
-      <ScrollReveal />
     </main>
   )
 }

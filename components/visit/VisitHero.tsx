@@ -1,65 +1,49 @@
 import Image from 'next/image'
-import { ChevronDown } from 'lucide-react'
+import Reveal from '@/components/ui/Reveal'
+import { site } from '@/lib/site'
 
+/**
+ * Full-bleed photographic hero. The headline, welcome line, and the
+ * practical fact line (when + where) answer the highest-intent
+ * visitor's first questions without scrolling.
+ */
 export default function VisitHero() {
+  const sunday = site.services[0]
+
   return (
-    <section
-      className="relative min-h-[60vh] flex flex-col items-center justify-center overflow-hidden bg-light-charcoal dark:bg-dark-black"
-    >
-      {/* ===== VISIT HERO ===== */}
-      {/* Background image layer */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        {/* Placeholder: Gradient background */}
-        <div className="w-full h-full bg-gradient-to-br from-dark-elevated via-dark-section to-dark-black opacity-60" />
-        
-        {/* Production Image:
-        */}
-        <Image
-          src="/images/worship-band-bw.jpg"
-          alt="Plan Your Visit Hero Image"
-          fill
-          priority
-          className="object-cover opacity-40"
-        />
-      </div>
-
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/60 z-[1] pointer-events-none" />
-
-      {/* Left side diagonal vector border */}
+    <section className="relative isolate flex min-h-[80vh] items-end overflow-hidden bg-black">
+      <Image
+        src="/images/community-choir.jpg"
+        alt="The choir of Amazing Grace Ministries leading the congregation in song"
+        fill
+        priority
+        sizes="100vw"
+        className="ken-burns -z-10 object-cover"
+      />
       <div
-        className="absolute left-0 top-0 bottom-0 w-[60px] bg-white/[0.03] pointer-events-none z-[2]"
-        style={{ clipPath: 'polygon(0 0, 100% 5%, 100% 95%, 0 100%)' }}
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 via-black/40 to-black/30"
       />
 
-      {/* Right side diagonal vector border */}
-      <div
-        className="absolute right-0 top-0 bottom-0 w-[60px] bg-white/[0.03] pointer-events-none z-[2]"
-        style={{ clipPath: 'polygon(100% 0, 0 5%, 0 95%, 100% 100%)' }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10 text-center px-6 max-w-4xl mx-auto py-24 reveal">
-        <span className="font-body font-semibold text-[11px] uppercase tracking-[0.2em] text-gold mb-4 block">
-          HOME / PLAN YOUR VISIT
-        </span>
-        <h1 className="font-display font-bold text-[44px] md:text-[72px] lg:text-[84px] leading-[1.02] text-white">
-          WE&apos;VE BEEN <span className="font-display italic text-gold block">Expecting You.</span>
-        </h1>
-        <div className="w-16 h-[2px] bg-gold mx-auto mt-6 mb-8" />
-        <p className="font-display italic text-[20px] text-white/60">
-          &ldquo;Come as you are. You are welcome here.&rdquo;
-        </p>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
-        <span className="font-body text-[11px] uppercase tracking-widest text-white/40">
-          Scroll
-        </span>
-        <ChevronDown className="w-4 h-4 text-gold animate-bounce" />
+      <div className="mx-auto w-full max-w-7xl px-6 pt-40 pb-20 md:pb-28">
+        <Reveal>
+          <p className="eyebrow text-white/70">Home / Plan Your Visit</p>
+          <h1 className="mt-4 max-w-4xl font-display text-display-xl font-light uppercase tracking-display text-white">
+            We&rsquo;ve Been{' '}
+            <span className="italic normal-case">Expecting You.</span>
+          </h1>
+        </Reveal>
+        <Reveal delay={1}>
+          <p className="mt-6 max-w-xl font-display text-heading italic text-white/85">
+            &ldquo;Come as you are. You are welcome here.&rdquo;
+          </p>
+        </Reveal>
+        <Reveal delay={2}>
+          <p className="mt-10 text-body-sm font-semibold tracking-wide text-white/70">
+            {sunday.day} {sunday.time} &middot; {site.address.street}, {site.address.city}
+          </p>
+        </Reveal>
       </div>
     </section>
   )
 }
-

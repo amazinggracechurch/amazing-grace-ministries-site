@@ -1,72 +1,72 @@
+import Section from '@/components/layout/Section'
+import SectionHeading from '@/components/layout/SectionHeading'
+import Reveal from '@/components/ui/Reveal'
+
+const beliefs = [
+  {
+    title: 'THE BIBLE',
+    body: 'We believe the Bible is the inspired, infallible Word of God and the ultimate authority for faith and life.',
+  },
+  {
+    title: 'THE TRINITY',
+    body: 'We believe in one God eternally existing in three persons \u2014 Father, Son, and Holy Spirit \u2014 co-equal and co-eternal.',
+  },
+  {
+    title: 'SALVATION',
+    body: 'We believe salvation is by grace alone, through faith alone, in Christ alone. Every person can be saved through repentance and belief.',
+  },
+  {
+    title: 'THE HOLY SPIRIT',
+    body: 'We believe in the present-day ministry of the Holy Spirit, including the gifts of the Spirit for the building up of the church.',
+  },
+  {
+    title: 'THE CHURCH',
+    body: 'We believe the local church is God\u2019s primary vehicle for making disciples and transforming communities.',
+  },
+  {
+    title: 'ETERNITY',
+    body: 'We believe in the resurrection of the dead and the reality of eternal life \u2014 heaven for the redeemed, judgment for the unrepentant.',
+  },
+]
+
+/**
+ * Our Beliefs — a numbered editorial list with large Cormorant numerals,
+ * not a card grid. Copy preserved verbatim from the original OurBeliefs.
+ */
 export default function OurBeliefs() {
-  const beliefs = [
-    {
-      title: 'THE BIBLE',
-      body: 'We believe the Bible is the inspired, infallible Word of God and the ultimate authority for faith and life.',
-    },
-    {
-      title: 'THE TRINITY',
-      body: 'We believe in one God eternally existing in three persons — Father, Son, and Holy Spirit — co-equal and co-eternal.',
-    },
-    {
-      title: 'SALVATION',
-      body: 'We believe salvation is by grace alone, through faith alone, in Christ alone. Every person can be saved through repentance and belief.',
-    },
-    {
-      title: 'THE HOLY SPIRIT',
-      body: 'We believe in the present-day ministry of the Holy Spirit, including the gifts of the Spirit for the building up of the church.',
-    },
-    {
-      title: 'THE CHURCH',
-      body: "We believe the local church is God's primary vehicle for making disciples and transforming communities.",
-    },
-    {
-      title: 'ETERNITY',
-      body: 'We believe in the resurrection of the dead and the reality of eternal life — heaven for the redeemed, judgment for the unrepentant.',
-    },
-  ]
-
   return (
-    <section
-      className="py-16 md:py-24 px-5 md:px-6 bg-light-gray dark:bg-dark-charcoal transition-colors duration-300"
-    >
-      {/* ===== OUR BELIEFS ===== */}
-      {/* Header */}
-      <div className="text-center mb-16 reveal">
-        <span className="font-body font-semibold text-[11px] uppercase tracking-[0.18em] text-gold">
-          WHAT WE STAND ON
-        </span>
-        <h2 className="font-display font-bold text-[44px] md:text-[52px] mt-2 text-light-charcoal dark:text-white">
-          What We Believe
-        </h2>
-        <p className="font-body text-[16px] max-w-xl mx-auto mt-4 text-light-secondary dark:text-white/60">
-          Our beliefs are rooted in the timeless truth of Scripture — the convictions that anchor everything we do as a community.
-        </p>
-      </div>
+    <Section rhythm="normal">
+      <Reveal>
+        <SectionHeading
+          eyebrow="What We Stand On"
+          title="What We Believe"
+          lede="Our beliefs are rooted in the timeless truth of Scripture — the convictions that anchor everything we do as a community."
+        />
+      </Reveal>
 
-      {/* Belief Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
-        {beliefs.map((belief, idx) => (
-          <div
-            key={idx}
-            className={`
-              border rounded-xl p-7 hover:border-gold transition-all duration-300 reveal
-              bg-light-white border-light-mid shadow-ph-light hover:shadow-ph-card
-              dark:bg-dark-card dark:border-dark-border dark:hover:shadow-gold
-              reveal-delay-${idx % 3}
-            `}
-          >
-            <div className="w-8 h-[3px] bg-gold mb-5" />
-            <h3 className="font-body font-bold text-[16px] uppercase tracking-wide text-light-charcoal dark:text-white">
-              {belief.title}
-            </h3>
-            <p className="font-body text-[14px] leading-relaxed mt-3 text-light-secondary dark:text-white/60">
-              {belief.body}
-            </p>
-          </div>
+      <ol className="mt-14 md:mt-16">
+        {beliefs.map((belief, i) => (
+          <li key={belief.title} className="border-t border-border-subtle last:border-b">
+            <Reveal
+              delay={Math.min(i, 4) as 0 | 1 | 2 | 3 | 4}
+              className="grid grid-cols-[auto_1fr] items-baseline gap-6 py-8 md:gap-12 md:py-10"
+            >
+              <span
+                aria-hidden
+                className="w-14 font-display text-display-md font-light leading-none text-text-muted md:w-20"
+              >
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div>
+                <h3 className="font-display text-heading font-medium text-text-primary">
+                  {belief.title}
+                </h3>
+                <p className="mt-2 max-w-2xl text-body text-text-secondary">{belief.body}</p>
+              </div>
+            </Reveal>
+          </li>
         ))}
-      </div>
-    </section>
+      </ol>
+    </Section>
   )
 }
-

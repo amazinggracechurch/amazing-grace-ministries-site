@@ -50,6 +50,10 @@ export const site = {
     numbers: ['470-480-9523', '425-436-6364'],
     code: '198407',
   },
+  contact: {
+    phone: '(651) 274-9224',
+    email: 'info@amazinggracemn.org',
+  },
   socials: {
     facebook: 'https://web.facebook.com/amazinggracemn',
     instagram: 'https://www.instagram.com/amazinggracemn',

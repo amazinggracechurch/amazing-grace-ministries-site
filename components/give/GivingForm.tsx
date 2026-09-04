@@ -1,198 +1,225 @@
 'use client'
 import { useState } from 'react'
-import { Heart, RefreshCw, DollarSign, Lock, ChevronDown } from 'lucide-react'
+import Link from 'next/link'
+import SectionHeading from '@/components/layout/SectionHeading'
+import SplitSection from '@/components/layout/SplitSection'
+import Button from '@/components/ui/Button'
+import Checkbox from '@/components/ui/Checkbox'
+import Input from '@/components/ui/Input'
+import RadioGroup from '@/components/ui/RadioGroup'
+import Reveal from '@/components/ui/Reveal'
+import Select from '@/components/ui/Select'
+import { cn } from '@/lib/cn'
 
+const PRESET_AMOUNTS = [25, 50, 100, 250, 500, 1000]
+
+const FUNDS = [
+  'General Fund',
+  'Building Fund',
+  'Missions & Outreach',
+  'Youth Ministry',
+  'Benevolence Fund',
+]
+
+const FREQUENCIES = [
+  { value: 'one-time', label: 'One-time' },
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'biweekly', label: 'Biweekly' },
+  { value: 'monthly', label: 'Monthly' },
+]
+
+/** Stripe-style card processing fee: 2.9% + $0.30. */
+const FEE_RATE = 0.029
+const FEE_FIXED = 0.3
+
+function formatUSD(n: number) {
+  return `$${n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+}
+
+/**
+ * The giving form — a complete, controlled flow ready for the Stripe
+ * Payment Element to slot into the submit step. Until the API keys land,
+ * the submit button stays disabled and the caption says so honestly.
+ */
 export default function GivingForm() {
-  const [selectedAmount, setSelectedAmount] = useState<number | null>(50)
-  const [customAmount, setCustomAmount] = useState<string>('')
-  const [givingType, setGivingType] = useState<'one-time' | 'recurring'>('one-time')
-  const [selectedFund, setSelectedFund] = useState<string>('General Fund')
+  const [preset, setPreset] = useState<number | null>(50)
+  const [custom, setCustom] = useState('')
+  const [customTouched, setCustomTouched] = useState(false)
+  const [fund, setFund] = useState('General Fund')
+  const [frequency, setFrequency] = useState('one-time')
+  const [coverFee, setCoverFee] = useState(false)
 
-  const presetAmounts = [25, 50, 100, 250, 500, 1000]
+  const customParsed =
+    custom !== '' && !Number.isNaN(Number(custom)) ? Number(custom) : null
+  const rawAmount = preset ?? customParsed
+  // A gift must be at least $1; anything below is treated as no amount.
+  const amount = rawAmount !== null && rawAmount >= 1 ? rawAmount : null
+  const fee = amount !== null ? amount * FEE_RATE + FEE_FIXED : null
+  const total = amount !== null ? (coverFee && fee !== null ? amount + fee : amount) : null
 
-  const handleCustomChange = (val: string) => {
-    // Only allow numeric or decimal inputs
-    if (val === '' || /^\d*\.?\d*$/.test(val)) {
-      setCustomAmount(val)
-      setSelectedAmount(null)
+  const customError =
+    customTouched && custom !== '' && amount === null
+      ? 'Enter a gift of at least $1.'
+      : undefined
+
+  const frequencyLabel =
+    FREQUENCIES.find((f) => f.value === frequency)?.label ?? 'One-time'
+  const submitSuffix = frequency === 'one-time' ? 'Now' : frequencyLabel
+
+  const handleCustomChange = (value: string) => {
+    // Digits with an optional decimal point and up to two cents digits.
+    if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
+      setCustom(value)
+      setPreset(null)
     }
   }
 
-  const activeDisplayAmount = selectedAmount !== null ? selectedAmount : customAmount
-
   return (
-    <section
-      id="giving-form"
-      className="
-        py-24 px-6
-        bg-light-gray dark:bg-dark-charcoal
-        transition-colors duration-300
-      "
-    >
-      {/* ===== SECTION HEADER ===== */}
-      <div className="text-center mb-14 reveal">
-        <span className="font-body font-semibold text-[11px] uppercase tracking-[0.18em] text-gold block">
-          PARTNER WITH US
-        </span>
-        <h2
-          className="
-            font-display font-bold text-[44px] md:text-[52px] mt-2
-            text-light-charcoal dark:text-white
-          "
-        >
-          Give Online
-        </h2>
-        <p
-          className="
-            font-body text-[16px] max-w-lg mx-auto mt-4
-            text-light-secondary dark:text-white/60
-          "
-        >
-          Your generosity fuels everything we do &mdash; from Sunday services to community outreach. Thank you for partnering with us.
-        </p>
-      </div>
+    <section id="giving-form" className="dark bg-surface text-text-primary">
+      <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+        <Reveal>
+          <SectionHeading
+            eyebrow="Partner With Us"
+            title="Give Online"
+            lede="Your generosity fuels everything we do — from Sunday services to community outreach. Thank you for partnering with us."
+          />
+        </Reveal>
 
-      {/* ===== GIVING FORM CARD ===== */}
-      <div
-        className="
-          max-w-xl mx-auto rounded-2xl border shadow-ph-deeper p-8 reveal transition-colors duration-300
-          bg-light-white border-light-mid
-          dark:bg-dark-card dark:border-dark-border
-        "
-      >
-        {/* Step 1 — Giving type toggle */}
-        <div>
-          <span className="font-body font-bold text-[11px] uppercase tracking-widest mb-3 block text-light-muted dark:text-white/40">
-            GIVING TYPE
-          </span>
-          <div className="flex rounded-lg overflow-hidden border border-light-mid dark:border-dark-border">
-            <button
-              onClick={() => setGivingType('one-time')}
-              className={`
-                flex-1 py-3 font-body font-bold text-[12px] uppercase tracking-[0.08em] transition-all cursor-pointer
-                flex items-center justify-center gap-2
-                ${
-                  givingType === 'one-time'
-                    ? 'bg-gold text-dark-charcoal border-gold'
-                    : 'bg-light-white text-light-secondary hover:bg-light-gray dark:bg-dark-elevated dark:text-white/50 dark:hover:bg-dark-muted'
-                }
-              `}
-            >
-              <Heart className="w-3.5 h-3.5" />
-              One-Time
-            </button>
-            <button
-              onClick={() => setGivingType('recurring')}
-              className={`
-                flex-1 py-3 font-body font-bold text-[12px] uppercase tracking-[0.08em] transition-all cursor-pointer
-                flex items-center justify-center gap-2
-                ${
-                  givingType === 'recurring'
-                    ? 'bg-gold text-dark-charcoal border-gold'
-                    : 'bg-light-white text-light-secondary hover:bg-light-gray dark:bg-dark-elevated dark:text-white/50 dark:hover:bg-dark-muted'
-                }
-              `}
-            >
-              <RefreshCw className="w-3.5 h-3.5 group-hover:rotate-45 transition-transform" />
-              Recurring
-            </button>
-          </div>
-        </div>
+        <Reveal delay={1} className="mt-14">
+          <SplitSection
+            main={
+              <form
+                aria-label="Online giving"
+                onSubmit={(e) => e.preventDefault()}
+                className="flex flex-col gap-8"
+              >
+                <RadioGroup
+                  legend="Frequency"
+                  name="frequency"
+                  options={FREQUENCIES}
+                  value={frequency}
+                  onValueChange={setFrequency}
+                  direction="horizontal"
+                />
 
-        {/* Step 2 — Fund selector */}
-        <div className="mt-6">
-          <span className="font-body font-bold text-[11px] uppercase tracking-widest mb-3 block text-light-muted dark:text-white/40">
-            GIVING FUND
-          </span>
-          <div className="relative">
-            <select
-              value={selectedFund}
-              onChange={(e) => setSelectedFund(e.target.value)}
-              className="
-                w-full py-3 pl-4 pr-10 rounded-lg border font-body text-[14px] font-semibold focus:outline-none focus:border-gold transition-colors appearance-none cursor-pointer
-                bg-light-white border-light-mid text-light-charcoal
-                dark:bg-dark-elevated dark:border-dark-border dark:text-white
-              "
-            >
-              <option value="General Fund">General Fund</option>
-              <option value="Building Fund">Building Fund</option>
-              <option value="Missions & Outreach">Missions & Outreach</option>
-              <option value="Youth Ministry">Youth Ministry</option>
-              <option value="Benevolence Fund">Benevolence Fund</option>
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gold pointer-events-none" />
-          </div>
-        </div>
-
-        {/* Step 3 — Amount selector */}
-        <div className="mt-6">
-          <span className="font-body font-bold text-[11px] uppercase tracking-widest mb-3 block text-light-muted dark:text-white/40">
-            SELECT AMOUNT
-          </span>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {presetAmounts.map((amt) => {
-              const isSelected = selectedAmount === amt
-              return (
-                <button
-                  key={amt}
-                  onClick={() => {
-                    setSelectedAmount(amt)
-                    setCustomAmount('')
-                  }}
-                  className={`
-                    py-3 rounded-lg border font-body font-bold text-[15px] transition-all cursor-pointer
-                    ${
-                      isSelected
-                        ? 'bg-gold text-dark-charcoal border-gold'
-                        : 'bg-light-white border-light-mid text-light-charcoal hover:border-gold hover:text-gold dark:bg-dark-elevated dark:border-dark-border dark:text-white dark:hover:border-gold dark:hover:text-gold'
-                    }
-                  `}
+                <Select
+                  label="Giving fund"
+                  value={fund}
+                  onChange={(e) => setFund(e.target.value)}
                 >
-                  ${amt}
-                </button>
-              )
-            })}
-          </div>
+                  {FUNDS.map((f) => (
+                    <option key={f} value={f}>
+                      {f}
+                    </option>
+                  ))}
+                </Select>
 
-          <div className="relative mt-3">
-            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gold" />
-            <input
-              type="text"
-              placeholder="Enter custom amount"
-              value={customAmount}
-              onChange={(e) => handleCustomChange(e.target.value)}
-              className="
-                w-full pl-9 pr-4 py-3 rounded-lg border font-body text-[15px] focus:outline-none focus:border-gold transition-colors
-                bg-light-white border-light-mid text-light-charcoal placeholder-light-muted
-                dark:bg-dark-elevated dark:border-dark-border dark:text-white dark:placeholder-white/30
-              "
-            />
-          </div>
-        </div>
+                <fieldset>
+                  <legend className="mb-1 text-body-sm font-semibold text-text-primary">
+                    Select amount
+                  </legend>
+                  <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {PRESET_AMOUNTS.map((amt) => {
+                      const selected = preset === amt
+                      return (
+                        <button
+                          key={amt}
+                          type="button"
+                          aria-pressed={selected}
+                          onClick={() => {
+                            setPreset(amt)
+                            setCustom('')
+                            setCustomTouched(false)
+                          }}
+                          className={cn(
+                            'border px-3 py-3 text-body font-semibold transition-colors duration-200',
+                            selected
+                              ? 'border-accent bg-accent text-on-accent'
+                              : 'border-border-strong bg-surface-raised text-text-primary hover:border-accent hover:text-accent'
+                          )}
+                        >
+                          ${amt.toLocaleString('en-US')}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <div className="mt-4">
+                    <Input
+                      label="Custom amount"
+                      hint="Minimum gift is $1."
+                      error={customError}
+                      inputMode="decimal"
+                      placeholder="Enter custom amount"
+                      value={custom}
+                      onChange={(e) => handleCustomChange(e.target.value)}
+                      onBlur={() => setCustomTouched(true)}
+                    />
+                  </div>
+                </fieldset>
 
-        {/* Step 4 — Submit button */}
-        {/* TODO: Wire up to payment gateway — client to implement */}
-        <button
-          onClick={() => {
-            alert(`generosity button clicked! fund: ${selectedFund}, type: ${givingType}, amount: $${activeDisplayAmount || '0'}`)
-          }}
-          className="
-            w-full mt-8 bg-gold text-dark-charcoal font-body font-bold text-[14px] uppercase tracking-[0.1em] py-4 rounded-lg
-            hover:bg-gold-light hover:-translate-y-0.5 transition-all shadow-gold flex items-center justify-center gap-2 cursor-pointer
-          "
-        >
-          <Heart className="w-4 h-4 text-dark-charcoal fill-dark-charcoal" />
-          Give ${activeDisplayAmount || '—'} {givingType === 'recurring' ? 'Monthly' : 'Now'}
-        </button>
+                <Checkbox
+                  label="Cover the processing fee"
+                  hint="Adds 2.9% + $0.30 so the full amount of your gift reaches the ministry."
+                  checked={coverFee}
+                  onChange={(e) => setCoverFee(e.target.checked)}
+                />
+              </form>
+            }
+            aside={
+              <div className="border border-border-subtle bg-surface-raised p-6 sm:p-8">
+                <p className="eyebrow text-text-muted">Your Gift</p>
+                <dl className="mt-6 flex flex-col gap-4 text-body">
+                  <div className="flex items-baseline justify-between gap-4">
+                    <dt className="text-text-secondary">Gift amount</dt>
+                    <dd className="font-semibold text-text-primary">
+                      {amount !== null ? formatUSD(amount) : '—'}
+                    </dd>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-4">
+                    <dt className="text-text-secondary">Frequency</dt>
+                    <dd className="font-semibold text-text-primary">{frequencyLabel}</dd>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-4">
+                    <dt className="text-text-secondary">Fund</dt>
+                    <dd className="text-right font-semibold text-text-primary">{fund}</dd>
+                  </div>
+                  {coverFee && fee !== null && (
+                    <div className="flex items-baseline justify-between gap-4">
+                      <dt className="text-text-secondary">Processing fee (2.9% + $0.30)</dt>
+                      <dd className="font-semibold text-text-primary">{formatUSD(fee)}</dd>
+                    </div>
+                  )}
+                </dl>
+                <div className="mt-6 flex items-baseline justify-between gap-4 border-t border-border-subtle pt-6">
+                  <p className="text-body font-semibold text-text-primary">Total</p>
+                  <p className="font-display text-heading font-medium text-text-primary">
+                    {total !== null ? formatUSD(total) : '—'}
+                  </p>
+                </div>
 
-        {/* Security note */}
-        <div className="flex items-center justify-center gap-2 mt-4 text-light-muted dark:text-white/35">
-          <Lock className="w-3.5 h-3.5 text-gold/60" />
-          <span className="font-body text-[12px]">
-            Secure, encrypted giving powered by Stripe
-          </span>
-        </div>
-
+                {/* TODO: enable when the Stripe Payment Element lands with API keys. */}
+                <Button
+                  type="submit"
+                  size="lg"
+                  disabled
+                  className="mt-8 w-full"
+                >
+                  Give {total !== null ? formatUSD(total) : '—'} {submitSuffix}
+                </Button>
+                <p className="mt-4 text-caption text-text-muted">
+                  Online giving launches soon. Give in person on Sundays, or{' '}
+                  <Link
+                    href="/contact"
+                    className="font-semibold text-accent underline-offset-4 transition-colors duration-200 hover:text-accent-hover hover:underline"
+                  >
+                    contact us
+                  </Link>{' '}
+                  and we will help you give another way.
+                </p>
+              </div>
+            }
+          />
+        </Reveal>
       </div>
     </section>
   )

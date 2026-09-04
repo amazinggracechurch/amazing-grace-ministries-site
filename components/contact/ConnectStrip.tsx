@@ -1,78 +1,72 @@
-import { Facebook, Instagram, Youtube, Music2, Twitter, ArrowRight } from 'lucide-react'
+import { ArrowRight, Facebook, Instagram, Youtube } from 'lucide-react'
+import Link from 'next/link'
+import Reveal from '@/components/ui/Reveal'
+import { site } from '@/lib/site'
 
+const socials = [
+  { icon: Facebook, label: 'Facebook', href: site.socials.facebook },
+  { icon: Instagram, label: 'Instagram', href: site.socials.instagram },
+  { icon: Youtube, label: 'YouTube', href: site.socials.youtube },
+]
+
+/**
+ * Stay-connected band — always dark, the quiet closing moment of the page.
+ * Social links are small inline affordances; the type does the work.
+ */
 export default function ConnectStrip() {
-  const socials = [
-    { icon: Facebook, label: 'Facebook', href: 'https://facebook.com/amazinggracemn' },
-    { icon: Instagram, label: 'Instagram', href: 'https://instagram.com/amazinggracemn' },
-    { icon: Youtube, label: 'YouTube', href: 'https://youtube.com/@amazinggracemn' },
-  ]
-
   return (
-    <section
-      className="
-        py-20 px-6 relative overflow-hidden
-        bg-light-charcoal dark:bg-dark-black
-        transition-colors duration-300
-      "
-    >
-      {/* Gold radial glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,168,76,0.06) 0%, transparent 70%)',
-        }}
-      />
+    <section className="dark bg-surface text-text-primary">
+      <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">
+        <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-12">
+          <Reveal className="lg:col-span-7">
+            <p className="eyebrow text-text-muted">Stay connected</p>
+            <h2 className="mt-4 font-display text-display-md font-medium tracking-display">
+              Follow Our Journey.{' '}
+              <span className="italic text-text-secondary">Join the Conversation.</span>
+            </h2>
+            <p className="mt-6 max-w-xl text-body text-text-secondary">
+              Stay up to date with sermons, events, announcements, and behind-the-scenes
+              moments from the Amazing Grace family.
+            </p>
+          </Reveal>
 
-      {/* Content */}
-      <div className="relative z-10 max-w-4xl mx-auto text-center reveal">
-        <span className="font-body font-semibold text-[11px] uppercase tracking-[0.2em] text-gold block">
-          STAY CONNECTED
-        </span>
-        
-        <h2 className="font-display font-bold text-[36px] md:text-[52px] text-white mt-3 leading-tight">
-          Follow Our Journey. <span className="font-display italic text-gold block sm:inline">Join the Conversation.</span>
-        </h2>
-        
-        <p className="font-body text-[16px] text-white/60 max-w-xl mx-auto mt-5 leading-relaxed">
-          Stay up to date with sermons, events, announcements, and behind-the-scenes moments from the Amazing Grace family.
-        </p>
-
-        {/* Social Icons row (2-col grid on mobile, 3-col grid on tablet, flex row on lg+) */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap lg:justify-center gap-4 mt-10">
-          {socials.map((platform, idx) => {
-            const IconComponent = platform.icon
-            return (
-              <a
-                key={idx}
-                href={platform.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="
-                  flex items-center justify-center gap-3 border rounded-lg px-5 py-3 transition-all duration-300 group
-                  bg-dark-card border-dark-border text-white/70 hover:border-gold hover:text-gold cursor-pointer
-                "
-              >
-                <IconComponent className="w-5 h-5 group-hover:text-gold transition-colors text-white/70" />
-                <span className="font-body font-semibold text-[13px] uppercase tracking-wide text-white/70 group-hover:text-gold transition-colors">
-                  {platform.label}
-                </span>
-              </a>
-            )
-          })}
+          <Reveal delay={1} className="lg:col-span-5">
+            <ul className="border-t border-border-subtle">
+              {socials.map((social) => {
+                const Icon = social.icon
+                return (
+                  <li key={social.label} className="border-b border-border-subtle">
+                    <a
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex items-center justify-between py-4 text-body font-semibold transition-colors duration-200 hover:text-accent"
+                    >
+                      <span className="inline-flex items-center gap-3">
+                        <Icon className="size-4 text-text-muted transition-colors duration-200 group-hover:text-accent" aria-hidden />
+                        {social.label}
+                      </span>
+                      <ArrowRight className="size-4 text-text-muted transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+                    </a>
+                  </li>
+                )
+              })}
+            </ul>
+          </Reveal>
         </div>
 
-        {/* Closing line */}
-        <div className="flex items-center justify-center gap-3 mt-14">
-          <span className="font-body text-[15px] text-white/50">Ready to visit in person?</span>
-          <a
-            href="/plan-your-visit"
-            className="flex items-center gap-1 font-body font-bold text-[15px] text-gold hover:text-gold-light transition-colors duration-300"
-          >
-            <span>Plan Your Visit</span>
-            <ArrowRight className="w-[15px] h-[15px]" />
-          </a>
-        </div>
-
+        <Reveal delay={2}>
+          <p className="mt-14 border-t border-border-subtle pt-8 text-body text-text-secondary">
+            Ready to visit in person?{' '}
+            <Link
+              href="/plan-your-visit"
+              className="group ml-2 inline-flex items-center gap-1.5 font-semibold text-text-primary transition-colors duration-200 hover:text-accent"
+            >
+              Plan Your Visit
+              <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+            </Link>
+          </p>
+        </Reveal>
       </div>
     </section>
   )

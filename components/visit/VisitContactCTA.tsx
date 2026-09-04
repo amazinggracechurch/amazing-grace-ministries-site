@@ -1,121 +1,87 @@
-import { MapPin, Play, MessageCircle, Phone } from 'lucide-react'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import Button from '@/components/ui/Button'
+import Reveal from '@/components/ui/Reveal'
+import { site } from '@/lib/site'
 
+const ways = [
+  {
+    label: 'Visit In Person',
+    lines: ['Sundays at 10:00 AM', 'Main Sanctuary'],
+    action: { text: 'Get Directions', href: site.address.mapsUrl, external: true },
+  },
+  {
+    label: 'Watch Online',
+    lines: ['Live every Sunday at 10:00 AM', 'Available online'],
+    action: { text: 'Watch Live', href: site.socials.youtube, external: true },
+  },
+  {
+    label: 'Join by Phone',
+    lines: ['470-480-9523 or 425-436-6364', 'Access Code: 198407'],
+    action: { text: 'Dial In', href: 'tel:4704809523', external: false },
+  },
+]
+
+/**
+ * Closing CTA — a dark centered statement band with the three ways to
+ * join, each one typographic rather than an icon card.
+ */
 export default function VisitContactCTA() {
   return (
-    <section
-      className="py-16 md:py-24 px-5 md:px-6 relative overflow-hidden bg-light-charcoal dark:bg-dark-black transition-colors duration-300"
-    >
-      {/* ===== VISIT CONTACT CTA ===== */}
-      {/* Gold radial glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,168,76,0.06) 0%, transparent 70%)',
-        }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10 max-w-4xl mx-auto text-center reveal">
-        <span className="font-body font-semibold text-[11px] uppercase tracking-[0.2em] text-gold block">
-          WE&apos;D LOVE TO MEET YOU
-        </span>
-        <h2 className="font-display font-bold text-[36px] md:text-[56px] leading-tight text-white mt-3">
-          See You This Sunday.
-        </h2>
-        <p className="font-body text-[17px] text-white/60 max-w-2xl mx-auto mt-5 leading-relaxed">
-          Whether you show up in person or tune in online &mdash; there&apos;s a seat with your name on it at Amazing Grace Ministries MN.
-        </p>
-
-        {/* 3 CTA cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-14 max-w-4xl mx-auto">
-          {/* Card 1 — Visit In Person */}
-          <div className="border border-dark-border rounded-xl p-7 text-center hover:border-gold transition-all duration-300 bg-dark-card group flex flex-col justify-between">
-            <div>
-              <MapPin className="w-9 h-9 text-gold mx-auto" />
-              <h3 className="font-body font-bold text-[18px] text-white mt-4 uppercase tracking-wide">
-                Visit In Person
-              </h3>
-              <div className="font-body text-[14px] text-white/60 mt-3 leading-relaxed">
-                <p>Sundays at 10:00 AM</p>
-                <p className="text-[12px] opacity-80 mt-1">Main Sanctuary</p>
-              </div>
-            </div>
-            
-            <a
-              href="https://maps.app.goo.gl/BdDkKSzQqxf4gv6g6"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="
-                mt-6 w-full bg-gold text-dark-charcoal font-body font-bold text-[13px] uppercase tracking-[0.08em] py-3.5 rounded-sm
-                hover:bg-gold-light hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2
-              "
-            >
-              Get Directions
-            </a>
-          </div>
-
-          {/* Card 2 — Watch Online */}
-          <div className="border border-dark-border rounded-xl p-7 text-center hover:border-gold transition-all duration-300 bg-dark-card group flex flex-col justify-between">
-            <div>
-              <Play className="w-9 h-9 text-gold mx-auto" />
-              <h3 className="font-body font-bold text-[18px] text-white mt-4 uppercase tracking-wide">
-                Watch Online
-              </h3>
-              <div className="font-body text-[14px] text-white/60 mt-3 leading-relaxed">
-                <p>Live every Sunday at 10:00 AM</p>
-                <p className="text-[12px] opacity-80 mt-1">Available online</p>
-              </div>
-            </div>
-
-            <a
-              href="https://www.youtube.com/@amazinggracemn"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="
-                mt-6 w-full border border-white/20 text-white font-body font-semibold text-[13px] uppercase tracking-[0.08em] py-3.5 rounded-sm
-                hover:border-gold hover:text-gold transition-all flex items-center justify-center gap-2
-              "
-            >
-              Watch Live
-            </a>
-          </div>
-
-          {/* Card 3 — Join by Phone */}
-          <div className="border border-dark-border rounded-xl p-7 text-center hover:border-gold transition-all duration-300 bg-dark-card group flex flex-col justify-between">
-            <div>
-              <Phone className="w-9 h-9 text-gold mx-auto" />
-              <h3 className="font-body font-bold text-[18px] text-white mt-4 uppercase tracking-wide">
-                Join by Phone
-              </h3>
-              <div className="font-body text-[14px] text-white/60 mt-3 leading-relaxed">
-                <p>470-480-9523 or 425-436-6364</p>
-                <p className="text-[12px] opacity-85 mt-1 font-semibold text-gold">Access Code: 198407</p>
-              </div>
-            </div>
-
-            <a
-              href="tel:4704809523"
-              className="
-                mt-6 w-full border border-white/20 text-white font-body font-semibold text-[13px] uppercase tracking-[0.08em] py-3.5 rounded-sm
-                hover:border-gold hover:text-gold transition-all flex items-center justify-center gap-2
-              "
-            >
-              Dial In
-            </a>
-          </div>
-        </div>
-
-        {/* Still have questions row */}
-        <div className="flex items-center justify-center gap-3 mt-12">
-          <span className="font-body text-[14px] text-white/50">Still have questions?</span>
-          <a
-            href="/contact"
-            className="flex items-center gap-1 font-body font-semibold text-[14px] text-gold hover:text-gold-light transition-colors"
+    <section aria-labelledby="visit-cta-heading" className="dark bg-surface text-text-primary">
+      <div className="mx-auto max-w-7xl px-6 py-24 text-center md:py-32">
+        <Reveal>
+          <p className="eyebrow text-accent">We&rsquo;d Love to Meet You</p>
+          <h2
+            id="visit-cta-heading"
+            className="mx-auto mt-4 max-w-2xl font-display text-display-lg font-medium tracking-display"
           >
-            <MessageCircle className="w-[14px] h-[14px]" />
-            <span>Contact Us &rarr;</span>
-          </a>
+            See You This Sunday.
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl text-subheading text-text-secondary">
+            Whether you show up in person or tune in online — there&rsquo;s a seat
+            with your name on it at Amazing Grace Ministries MN.
+          </p>
+        </Reveal>
+
+        <div className="mt-14 grid grid-cols-1 gap-10 border-t border-border-subtle pt-12 sm:grid-cols-3">
+          {ways.map((way, i) => (
+            <Reveal key={way.label} delay={Math.min(i + 1, 4) as 0 | 1 | 2 | 3 | 4}>
+              <p className="eyebrow text-text-muted">{way.label}</p>
+              <p className="mt-3 font-display text-heading font-medium">{way.lines[0]}</p>
+              <p className="mt-1 text-body-sm text-text-secondary">{way.lines[1]}</p>
+              <div className="mt-5">
+                <Button
+                  href={way.action.href}
+                  variant="secondary"
+                  size="sm"
+                  className="group"
+                  {...(way.action.external
+                    ? { target: '_blank', rel: 'noopener noreferrer' }
+                    : {})}
+                >
+                  {way.action.text}
+                  <ArrowUpRight
+                    aria-hidden
+                    className="size-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  />
+                </Button>
+              </div>
+            </Reveal>
+          ))}
         </div>
+
+        <Reveal delay={2}>
+          <p className="mt-14 flex flex-wrap items-center justify-center gap-2 text-body-sm text-text-secondary">
+            Still have questions?
+            <Button href="/contact" variant="link" size="sm" className="group">
+              Contact Us
+              <ArrowRight
+                aria-hidden
+                className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+              />
+            </Button>
+          </p>
+        </Reveal>
       </div>
     </section>
   )

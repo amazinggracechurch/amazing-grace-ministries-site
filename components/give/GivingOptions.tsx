@@ -1,78 +1,52 @@
-import { Landmark, Mail, HandCoins, Building2 } from 'lucide-react'
+import Section from '@/components/layout/Section'
+import SectionHeading from '@/components/layout/SectionHeading'
+import Reveal from '@/components/ui/Reveal'
 
+const options = [
+  {
+    title: 'In Person',
+    body: 'Drop your offering in the basket during any Sunday or Wednesday service. Every gift is received with gratitude.',
+  },
+  {
+    title: 'By Mail',
+    body: 'Send a check made payable to "Amazing Grace Ministries MN" to our church address. Include your name and fund designation.',
+  },
+  {
+    title: 'Bank Transfer',
+    body: 'Set up a direct bank transfer or ACH payment. Contact our finance team for account details and setup instructions.',
+  },
+  {
+    title: 'Planned Giving',
+    body: 'Consider including Amazing Grace in your estate planning. Contact us to learn about legacy giving opportunities.',
+  },
+]
+
+/**
+ * Ways to give — a clean typographic list. The words carry the section;
+ * no icon cards. Copy preserved verbatim from the original GivingOptions.
+ */
 export default function GivingOptions() {
-  const options = [
-    {
-      icon: HandCoins,
-      title: 'IN PERSON',
-      body: 'Drop your offering in the basket during any Sunday or Wednesday service. Every gift is received with gratitude.',
-    },
-    {
-      icon: Mail,
-      title: 'BY MAIL',
-      body: 'Send a check made payable to "Amazing Grace Ministries MN" to our church address. Include your name and fund designation.',
-    },
-    {
-      icon: Landmark,
-      title: 'BANK TRANSFER',
-      body: 'Set up a direct bank transfer or ACH payment. Contact our finance team for account details and setup instructions.',
-    },
-    {
-      icon: Building2,
-      title: 'PLANNED GIVING',
-      body: 'Consider including Amazing Grace in your estate planning. Contact us to learn about legacy giving opportunities.',
-    },
-  ]
-
   return (
-    <section
-      className="
-        py-20 px-6
-        bg-light-charcoal dark:bg-dark-section
-        transition-colors duration-300
-      "
-    >
-      {/* ===== HEADER ===== */}
-      <div className="text-center mb-14 reveal">
-        <span className="font-body font-semibold text-[11px] uppercase tracking-[0.18em] text-gold block">
-          OTHER WAYS TO GIVE
-        </span>
-        <h2 className="font-display font-bold text-[38px] md:text-[48px] text-white mt-2">
-          More Giving Options
-        </h2>
-      </div>
+    <Section rhythm="normal">
+      <Reveal>
+        <SectionHeading
+          eyebrow="Other Ways to Give"
+          title="More Giving Options"
+        />
+      </Reveal>
 
-      {/* ===== OPTIONS GRID ===== */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-5xl mx-auto">
-        {options.map((opt, idx) => {
-          const IconComponent = opt.icon
-          return (
-            <div
-              key={idx}
-              className="
-                border rounded-xl p-7 hover:border-gold transition-all duration-300 reveal
-                bg-dark-card border-dark-border
-              "
-            >
-              {/* Top Accent */}
-              <div className="w-8 h-[3px] bg-gold mb-5" />
-
-              {/* Icon */}
-              <IconComponent className="w-9 h-9 text-gold mb-4" />
-
-              {/* Title */}
-              <h3 className="font-body font-bold text-[16px] text-white uppercase tracking-wide">
-                {opt.title}
-              </h3>
-
-              {/* Body */}
-              <p className="font-body text-[13px] text-white/60 leading-relaxed mt-2">
-                {opt.body}
-              </p>
-            </div>
-          )
-        })}
-      </div>
-    </section>
+      <dl className="mt-14 grid grid-cols-1 border-t border-border-subtle sm:grid-cols-2 lg:grid-cols-4">
+        {options.map((option, i) => (
+          <Reveal
+            key={option.title}
+            delay={Math.min(i, 4) as 0 | 1 | 2 | 3 | 4}
+            className="border-b border-border-subtle py-8 sm:px-6 sm:first:pl-0 sm:last:pr-0"
+          >
+            <dt className="eyebrow text-accent">{option.title}</dt>
+            <dd className="mt-4 max-w-xs text-body text-text-secondary">{option.body}</dd>
+          </Reveal>
+        ))}
+      </dl>
+    </Section>
   )
 }

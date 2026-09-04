@@ -1,83 +1,51 @@
-import { ChevronDown, CalendarDays } from 'lucide-react'
 import Image from 'next/image'
+import { CalendarDays } from 'lucide-react'
+import Reveal from '@/components/ui/Reveal'
 
+/**
+ * Events hero — full-bleed stage photograph, single ken-burns drift.
+ * Same overlaid-type language as the home hero, one static image.
+ */
 export default function EventsHero() {
   return (
-    <section
-      className="
-        relative min-h-[60vh] flex flex-col items-center justify-center overflow-hidden
-        bg-light-charcoal dark:bg-dark-black
-      "
-    >
-      {/* Background image layer */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        {/* Placeholder: Gradient background */}
-        <div className="w-full h-full bg-gradient-to-br from-dark-elevated via-dark-section to-dark-black opacity-60" />
-        
-        {/* Production Image:
-        */}
-        <Image
-          src="/images/hero-worship.jpg"
-          alt="Events Hero Image"
-          fill
-          priority
-          className="object-cover opacity-35"
-        />
-      </div>
-
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/65 z-[1] pointer-events-none" />
-
-      {/* Left side diagonal vector border */}
+    <section className="relative isolate flex min-h-[70vh] items-end overflow-hidden bg-black">
+      <Image
+        src="/images/hero-stage.jpg"
+        alt="Women of the church leading worship from the stage"
+        fill
+        priority
+        sizes="100vw"
+        className="ken-burns -z-10 object-cover"
+      />
       <div
-        className="
-          absolute left-0 top-0 bottom-0 w-[60px] bg-white/[0.03] pointer-events-none z-[2]
-        "
-        style={{ clipPath: 'polygon(0 0, 100% 5%, 100% 95%, 0 100%)' }}
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 via-black/30 to-black/40"
       />
 
-      {/* Right side diagonal vector border */}
-      <div
-        className="
-          absolute right-0 top-0 bottom-0 w-[60px] bg-white/[0.03] pointer-events-none z-[2]
-        "
-        style={{ clipPath: 'polygon(100% 0, 0 5%, 0 95%, 100% 100%)' }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10 text-center px-6 max-w-4xl mx-auto py-24 reveal">
-        <span className="font-body font-semibold text-[11px] uppercase tracking-[0.2em] text-gold mb-4 block">
-          HOME / EVENTS
-        </span>
-        <h1 className="font-display font-bold text-[44px] md:text-[72px] lg:text-[84px] leading-[1.02] text-white">
-          SOMETHING <span className="font-display italic text-gold block">Always Happening.</span>
-        </h1>
-        <div className="w-16 h-[2px] bg-gold mx-auto mt-6 mb-8" />
-        <p className="font-display italic text-[20px] text-white/60">
-          &ldquo;There is always a place for you here.&rdquo;
-        </p>
-
-        {/* View All Events CTA */}
-        <div className="mt-8">
-          <a
-            href="#browser"
-            className="
-              inline-flex items-center gap-3 bg-gold text-dark-charcoal font-body font-bold text-[13px] uppercase tracking-[0.1em] px-8 py-4 rounded-sm
-              hover:bg-gold-light hover:-translate-y-0.5 transition-all shadow-gold
-            "
-          >
-            <CalendarDays className="w-4 h-4 text-dark-charcoal" />
-            View All Events
-          </a>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
-        <span className="font-body text-[11px] uppercase tracking-widest text-white/40">
-          Scroll
-        </span>
-        <ChevronDown className="w-4 h-4 text-gold animate-bounce" />
+      <div className="mx-auto w-full max-w-7xl px-6 pt-40 pb-24">
+        <Reveal>
+          <p className="eyebrow text-white/70">Home / Events</p>
+          <h1 className="mt-4 max-w-4xl font-display text-display-lg font-light uppercase tracking-display text-white">
+            Something
+            <span className="block normal-case italic">Always Happening.</span>
+          </h1>
+        </Reveal>
+        <Reveal delay={1}>
+          <p className="mt-6 max-w-xl font-display text-heading italic text-white/85">
+            &ldquo;There is always a place for you here.&rdquo;
+          </p>
+        </Reveal>
+        <Reveal delay={2}>
+          <div className="mt-10">
+            <a
+              href="#upcoming"
+              className="inline-flex items-center gap-2 bg-accent px-6 py-3 text-subheading font-semibold text-on-accent transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover"
+            >
+              <CalendarDays className="size-4" aria-hidden />
+              View All Events
+            </a>
+          </div>
+        </Reveal>
       </div>
     </section>
   )

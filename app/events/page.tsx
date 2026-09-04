@@ -1,11 +1,10 @@
+import AnnouncementBar from '@/components/AnnouncementBar'
+import Footer from '@/components/Footer'
 import Navbar from '@/components/Navbar'
 import EventsHero from '@/components/events/EventsHero'
-import FeaturedEvent from '@/components/events/FeaturedEvent'
-import EventsBrowser from '@/components/events/EventsBrowser'
-import RecurringEvents from '@/components/events/RecurringEvents'
+import UpcomingEvents from '@/components/events/UpcomingEvents'
+import RecurringRhythms from '@/components/events/RecurringRhythms'
 import EventsCTA from '@/components/events/EventsCTA'
-import Footer from '@/components/Footer'
-import ScrollReveal from '@/components/ScrollReveal'
 
 export const metadata = {
   title: 'Events | Amazing Grace Ministries MN',
@@ -14,15 +13,14 @@ export const metadata = {
 
 export default function EventsPage() {
   return (
-    <main className="flex flex-col min-h-screen bg-light-white dark:bg-dark-charcoal font-body antialiased transition-colors duration-300">
+    <main className="flex min-h-screen flex-col bg-surface font-body text-text-primary antialiased">
       <Navbar />
+      <AnnouncementBar />
       <EventsHero />
-      <FeaturedEvent />
-      <EventsBrowser />
-      <RecurringEvents />
+      <UpcomingEvents />
+      <RecurringRhythms />
       <EventsCTA />
       <Footer />
-      <ScrollReveal />
     </main>
   )
 }

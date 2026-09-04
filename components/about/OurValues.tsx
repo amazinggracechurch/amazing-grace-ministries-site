@@ -1,66 +1,58 @@
+import Section from '@/components/layout/Section'
+import SectionHeading from '@/components/layout/SectionHeading'
+import Reveal from '@/components/ui/Reveal'
+
+const values = [
+  {
+    num: '01',
+    name: 'WORD-CENTERED',
+    body: 'Everything we do is anchored in Scripture. We preach, teach, and live the uncompromising truth of God\u2019s Word through engaging sermons and interactive Bible studies.',
+  },
+  {
+    num: '02',
+    name: 'SPIRIT-LED',
+    body: 'We create space for the Holy Spirit to move. We believe in authentic, Spirit-filled worship and Spirit-empowered living \u2014 including our Open Heavens prayer gatherings.',
+  },
+  {
+    num: '03',
+    name: 'COMMUNITY-DRIVEN',
+    body: 'We do life together. Real relationships, real accountability, and real love for one another are at the core of who we are as the Amazing Family.',
+  },
+  {
+    num: '04',
+    name: 'MISSION-FOCUSED',
+    body: 'We exist not just for ourselves but for our city and the world. We are dedicated to spreading hope, love, and the teachings of Christ beyond our walls.',
+  },
+]
+
+/**
+ * Our Values — a quiet two-column text grid. No icons, no borders;
+ * the words carry it. Copy preserved verbatim from the original OurValues.
+ */
 export default function OurValues() {
-  const values = [
-    {
-      num: '01',
-      name: 'WORD-CENTERED',
-      body: "Everything we do is anchored in Scripture. We preach, teach, and live the uncompromising truth of God's Word through engaging sermons and interactive Bible studies.",
-    },
-    {
-      num: '02',
-      name: 'SPIRIT-LED',
-      body: 'We create space for the Holy Spirit to move. We believe in authentic, Spirit-filled worship and Spirit-empowered living — including our Open Heavens prayer gatherings.',
-    },
-    {
-      num: '03',
-      name: 'COMMUNITY-DRIVEN',
-      body: 'We do life together. Real relationships, real accountability, and real love for one another are at the core of who we are as the Amazing Family.',
-    },
-    {
-      num: '04',
-      name: 'MISSION-FOCUSED',
-      body: 'We exist not just for ourselves but for our city and the world. We are dedicated to spreading hope, love, and the teachings of Christ beyond our walls.',
-    },
-  ]
-
   return (
-    <section
-      className="py-16 md:py-24 px-5 md:px-6 bg-light-charcoal dark:bg-dark-section transition-colors duration-300"
-    >
-      {/* ===== OUR VALUES ===== */}
-      {/* Header */}
-      <div className="text-center mb-6 reveal">
-        <span className="font-body font-semibold text-[11px] uppercase tracking-[0.18em] text-gold">
-          HOW WE LIVE
-        </span>
-        <h2 className="font-display font-bold text-[44px] md:text-[52px] text-white mt-2">
-          Our Core Values
-        </h2>
-        <p className="font-body text-[16px] text-white/60 max-w-2xl mx-auto mt-4">
-          At Amazing Grace Ministries, we believe that spiritual growth is a lifelong journey that deepens our relationship with God and enriches our lives. We provide a nurturing environment where individuals can explore their faith through engaging sermons, interactive Bible studies, and personal prayer sessions.
+    <Section rhythm="dense" sunken>
+      <Reveal>
+        <SectionHeading eyebrow="How We Live" title="Our Core Values" />
+        <p className="mt-5 max-w-2xl text-body text-text-secondary">
+          At Amazing Grace Ministries, we believe that spiritual growth is a lifelong journey that
+          deepens our relationship with God and enriches our lives. We provide a nurturing
+          environment where individuals can explore their faith through engaging sermons,
+          interactive Bible studies, and personal prayer sessions.
         </p>
-      </div>
+      </Reveal>
 
-      {/* Values Grid */}
-      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-14">
-        {values.map((val, idx) => (
-          <div
-            key={idx}
-            className="bg-dark-card border border-dark-border rounded-xl p-8 hover:border-gold transition-all duration-300 group reveal"
-          >
-            <div className="font-display font-bold text-[80px] leading-none text-gold/20 group-hover:text-gold/30 transition-colors">
-              {val.num}
-            </div>
-            <h3 className="font-body font-bold text-[20px] uppercase tracking-wide text-white mt-[-20px]">
-              {val.name}
+      <div className="mt-12 grid grid-cols-1 gap-x-16 gap-y-10 md:grid-cols-2">
+        {values.map((value, i) => (
+          <Reveal key={value.num} delay={Math.min(i, 4) as 0 | 1 | 2 | 3 | 4}>
+            <p className="text-caption font-semibold tracking-wide text-text-muted">{value.num}</p>
+            <h3 className="mt-2 font-display text-heading font-medium text-text-primary">
+              {value.name}
             </h3>
-            <div className="w-8 h-[2px] bg-gold my-4" />
-            <p className="font-body text-[15px] text-white/60 leading-relaxed">
-              {val.body}
-            </p>
-          </div>
+            <p className="mt-3 max-w-md text-body text-text-secondary">{value.body}</p>
+          </Reveal>
         ))}
       </div>
-    </section>
+    </Section>
   )
 }
-

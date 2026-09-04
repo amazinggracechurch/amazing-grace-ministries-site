@@ -1,76 +1,60 @@
-import { Youtube, Bell, ExternalLink } from 'lucide-react'
+import { Bell, ExternalLink, Youtube } from 'lucide-react'
+import FullBleed from '@/components/layout/FullBleed'
+import Button from '@/components/ui/Button'
+import Reveal from '@/components/ui/Reveal'
+import { site } from '@/lib/site'
 
+const stats = [
+  { number: '1400+', label: 'Messages Preached' },
+  { number: '3', label: 'Sermon Series' },
+  { number: '100+', label: 'Countries Reached' },
+]
+
+/**
+ * Subscribe CTA — full-bleed black-and-white worship photograph, the
+ * page's closing centered statement.
+ */
 export default function YouTubeCTA() {
-  const stats = [
-    { number: '1400+', label: 'MESSAGES PREACHED' },
-    { number: '3',     label: 'SERMON SERIES' },
-    { number: '100+',  label: 'COUNTRIES REACHED' },
-  ]
-
   return (
-    <section
-      className="py-16 md:py-24 px-5 md:px-6 relative overflow-hidden bg-light-charcoal dark:bg-dark-black transition-colors duration-300"
+    <FullBleed
+      src="/images/worship-band-bw.jpg"
+      alt="The church band — keys, guitar, and saxophone — leading worship, in black and white"
+      height="band"
+      align="center"
     >
-      {/* ===== YOUTUBE CTA ===== */}
-      {/* Gold radial glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,168,76,0.06) 0%, transparent 70%)',
-        }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10 max-w-3xl mx-auto text-center reveal">
-        <Youtube className="w-14 h-14 text-gold mx-auto fill-gold/10" />
-        
-        <h2 className="font-display font-bold text-[40px] md:text-[52px] text-white mt-4 leading-tight">
-          Never Miss a <span className="font-display italic text-gold block sm:inline">Sunday Message.</span>
+      <Reveal>
+        <h2 className="mx-auto max-w-2xl font-display text-display-md font-medium tracking-display">
+          Never Miss a <span className="italic">Sunday Message.</span>
         </h2>
-        
-        <p className="font-body text-[17px] text-white/60 max-w-xl mx-auto mt-5 leading-relaxed">
-          Subscribe to the Amazing Grace Ministries MN YouTube channel and get notified every time a new message drops. Every sermon, every series &mdash; available free, forever.
+        <p className="mx-auto mt-5 max-w-xl text-subheading text-white/80">
+          Subscribe to the Amazing Grace Ministries MN YouTube channel and get notified every time a
+          new message drops. Every sermon, every series &mdash; available free, forever.
         </p>
-
-        {/* CTA row */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mt-10">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <Button href={site.socials.youtube} target="_blank" rel="noopener noreferrer" size="lg">
+            <Youtube className="size-4" aria-hidden />
+            Subscribe on YouTube
+            <ExternalLink className="size-3" aria-hidden />
+          </Button>
           <a
-            href="https://www.youtube.com/@amazinggracemn"
+            href={site.socials.youtube}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-gold text-dark-charcoal font-body font-bold text-[13px] uppercase tracking-[0.1em] px-8 py-4 rounded-sm hover:bg-gold-light hover:-translate-y-0.5 transition-all shadow-gold flex items-center gap-2"
+            className="inline-flex items-center gap-2 border border-white/60 px-6 py-3 text-subheading font-semibold text-white transition-colors duration-200 hover:border-white hover:bg-white/10"
           >
-            <Youtube className="w-4 h-4 fill-dark-charcoal" />
-            <span>Subscribe on YouTube</span>
-            <ExternalLink className="w-3 h-3" />
-          </a>
-          <a
-            href="https://www.youtube.com/@amazinggracemn"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="border border-white/20 text-white font-body font-semibold text-[13px] uppercase tracking-[0.08em] px-8 py-4 rounded-sm hover:border-gold hover:text-gold transition-all flex items-center gap-2"
-          >
-            <Bell className="w-4 h-4" />
-            <span>Turn on Notifications</span>
+            <Bell className="size-4" aria-hidden />
+            Turn on Notifications
           </a>
         </div>
-
-        {/* Stats strip */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-10 sm:gap-14 mt-16">
-          {stats.map((stat, idx) => (
-            <div key={idx} className="text-center">
-              <div className="font-display font-bold text-[40px] text-gold leading-none">
-                {stat.number}
-              </div>
-              <div className="font-body font-semibold text-[11px] uppercase tracking-widest text-white/40 mt-2">
-                {stat.label}
-              </div>
+        <dl className="mt-14 flex flex-col items-center justify-center gap-10 sm:flex-row sm:gap-14">
+          {stats.map((stat) => (
+            <div key={stat.label} className="text-center">
+              <dd className="font-display text-display-md font-light leading-none">{stat.number}</dd>
+              <dt className="eyebrow mt-2 text-white/60">{stat.label}</dt>
             </div>
           ))}
-        </div>
-
-      </div>
-    </section>
+        </dl>
+      </Reveal>
+    </FullBleed>
   )
 }
-
