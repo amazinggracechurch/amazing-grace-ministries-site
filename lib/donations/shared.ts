@@ -3,14 +3,17 @@
  * (no secrets, no Stripe client).
  */
 
-export const FUNDS = ['general', 'missions', 'building', 'benevolence'] as const
+export const FUNDS = ['Offering', 'Tithes', 'Missions', 'Building', 'Welfare', 'Childrens'] as const
 export type Fund = (typeof FUNDS)[number]
 
 export const FUND_LABELS: Record<Fund, string> = {
-  general: 'General Fund',
-  missions: 'Missions & Outreach',
-  building: 'Building Fund',
-  benevolence: 'Benevolence Fund',
+  Offering: 'General Offering',
+  Tithes: 'Tithes',
+  Missions: 'Missions & Outreach',
+  Building: 'Building Fund',
+  Welfare: 'Welfare Fund',
+  Childrens: 'Children\'s Ministry',
+
 }
 
 export const FREQUENCIES = ['one-time', 'weekly', 'biweekly', 'monthly'] as const
