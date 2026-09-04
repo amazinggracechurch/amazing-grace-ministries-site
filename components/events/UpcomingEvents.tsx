@@ -35,7 +35,7 @@ const events: ChurchEvent[] = [
     date: 'June 7, 2025',
     month: 'JUN',
     day: '07',
-    time: '10:00 AM',
+    time: '09:00 AM',
     location: 'Main Sanctuary',
     description:
       'Start the month with a supercharge of prayer. Set your mind in tune with God in our monthly corporate prayer gathering.',
@@ -83,7 +83,7 @@ const events: ChurchEvent[] = [
     date: 'June 22, 2025',
     month: 'JUN',
     day: '22',
-    time: '10:00 AM',
+    time: '09:00 AM',
     location: 'Sanctuary',
     description:
       'Join our weekly family gathering — Spirit-filled worship, powerful teaching from Pastor Uchegbu, and real community.',
@@ -95,7 +95,7 @@ const events: ChurchEvent[] = [
     date: 'July 5, 2025',
     month: 'JUL',
     day: '05',
-    time: '10:00 AM',
+    time: '09:00 AM',
     location: 'Main Sanctuary',
     description:
       'Our monthly corporate prayer gathering. Start July with a supercharge of prayer and seek God together as a church family.',
@@ -154,7 +154,7 @@ export default function UpcomingEvents() {
             <dl className="mt-8 grid grid-cols-1 gap-4 border-t border-border-subtle pt-6 sm:grid-cols-3">
               <div>
                 <dt className="eyebrow text-text-muted">Time</dt>
-                <dd className="mt-1 text-body-sm font-semibold text-text-primary">10:00 AM</dd>
+                <dd className="mt-1 text-body-sm font-semibold text-text-primary">09:00 AM</dd>
               </div>
               <div>
                 <dt className="eyebrow text-text-muted">Location</dt>

@@ -35,7 +35,7 @@ const events = [
     category: 'Worship',
     title: 'Sunday Celebration',
     description: 'Join our weekly family gathering — all are welcome. In person and online.',
-    time: '10:00 AM Sunday',
+    time: '09:00 AM Sunday',
     location: 'Sanctuary',
   },
 ]

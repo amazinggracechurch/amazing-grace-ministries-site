@@ -11,12 +11,12 @@ export default function AnnouncementBar() {
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-5 gap-y-1 px-6 py-2 text-caption font-semibold tracking-wide text-text-secondary">
         <span className="inline-flex items-center gap-1.5">
           <Clock className="size-3.5 text-accent" aria-hidden />
-          SUNDAYS 10:00 AM
+          SUNDAYS 09:00 AM
         </span>
         <span aria-hidden className="hidden text-border-strong sm:inline">|</span>
         <span className="inline-flex items-center gap-1.5">
           <Calendar className="size-3.5 text-accent" aria-hidden />
-          WEDNESDAYS 7:00 PM
+          WEDNESDAYS 6:00 PM
         </span>
         <span aria-hidden className="hidden text-border-strong md:inline">|</span>
         <Link

@@ -14,7 +14,7 @@ const recurring = [
     title: 'SUNDAY SERVICE',
     subtitle: '',
     desc: 'Our weekly family gathering — Spirit-filled worship, powerful teaching, and authentic community.',
-    time: '10:00 AM Every Sunday',
+    time: '09:00 AM Every Sunday',
     loc: 'Main Sanctuary',
   },
   {

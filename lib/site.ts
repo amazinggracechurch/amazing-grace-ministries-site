@@ -24,19 +24,19 @@ export const site = {
     {
       name: 'Sunday Service',
       day: 'Sundays',
-      time: '10:00 AM',
+      time: '09:00 AM',
       note: 'In person & live streamed',
     },
     {
       name: 'Bible Study — "Digging For Hidden Treasures"',
       day: 'Mondays',
-      time: '7:00 PM',
+      time: '6:00 PM',
       note: 'Audio dial-in',
     },
     {
       name: 'Midweek Service — "Hour of Battle"',
       day: 'Wednesdays',
-      time: '7:00 PM',
+      time: '6:00 PM',
       note: 'Audio dial-in',
     },
     {

@@ -6,12 +6,12 @@ import { site } from '@/lib/site'
 const ways = [
   {
     label: 'Visit In Person',
-    lines: ['Sundays at 10:00 AM', 'Main Sanctuary'],
+    lines: ['Sundays at 09:00 AM', 'Main Sanctuary'],
     action: { text: 'Get Directions', href: site.address.mapsUrl, external: true },
   },
   {
     label: 'Watch Online',
-    lines: ['Live every Sunday at 10:00 AM', 'Available online'],
+    lines: ['Live every Sunday at 09:00 AM', 'Available online'],
     action: { text: 'Watch Live', href: site.socials.youtube, external: true },
   },
   {

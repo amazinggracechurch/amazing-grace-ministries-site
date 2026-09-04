@@ -80,7 +80,7 @@ export default function Footer() {
           <div className="md:col-span-4">
             <h2 className="eyebrow text-text-muted">Service Times</h2>
             <ul className="mt-5 space-y-2 text-body-sm text-text-secondary">
-              <li>Sundays: 10:00 AM</li>
+              <li>Sundays: 09:00 AM</li>
               <li>Mondays: Bible Study</li>
               <li>Wednesdays: Hour of Battle</li>
               <li>1st Saturday: Open Heavens</li>

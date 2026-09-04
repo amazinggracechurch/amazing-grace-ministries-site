@@ -166,7 +166,7 @@ const typeScale: { token: string; className: string; sample: string }[] = [
   { token: 'text-display-lg', className: 'font-display text-display-lg tracking-display', sample: 'Grace' },
   { token: 'text-display-md', className: 'font-display text-display-md tracking-display', sample: 'Grace upon grace' },
   { token: 'text-heading', className: 'font-display text-heading tracking-display', sample: 'A quiet confidence' },
-  { token: 'text-subheading', className: 'text-subheading', sample: 'Join us this Sunday at 10:00 AM' },
+  { token: 'text-subheading', className: 'text-subheading', sample: 'Join us this Sunday at 09:00 AM' },
   { token: 'text-body', className: 'text-body', sample: 'Body text carries most of the page, set in Nunito.' },
   { token: 'text-body-sm', className: 'text-body-sm', sample: 'Small body text for supporting detail.' },
   { token: 'text-caption', className: 'text-caption', sample: 'Captions, metadata, and fine print.' },
@@ -184,7 +184,7 @@ function DialogDemo() {
       <Button onClick={() => setOpen(true)}>Open dialog</Button>
       <Dialog open={open} onClose={() => setOpen(false)} title="Plan your visit">
         <p className="text-body text-text-secondary">
-          We gather every Sunday at 10:00 AM. Come as you are — there is
+          We gather every Sunday at 09:00 AM. Come as you are — there is
           coffee in the lobby and someone at the door to say hello.
         </p>
         <div className="mt-6 flex flex-wrap justify-end gap-3">
@@ -479,7 +479,7 @@ export default function StyleguideClient() {
                   />
                   <Textarea label="With error" error="Tell us a little more." />
                   <Select label="Service time" defaultValue="sunday">
-                    <option value="sunday">Sunday, 10:00 AM</option>
+                    <option value="sunday">Sunday, 09:00 AM</option>
                     <option value="wednesday">Wednesday, 6:30 PM</option>
                   </Select>
                   <Select label="Disabled select" disabled defaultValue="a">
@@ -558,7 +558,7 @@ export default function StyleguideClient() {
                   label: 'Sunday',
                   panel: (
                     <p className="text-body text-text-secondary">
-                      Worship at 10:00 AM, followed by coffee and conversation in the
+                      Worship at 09:00 AM, followed by coffee and conversation in the
                       fellowship hall.
                     </p>
                   ),
@@ -600,7 +600,7 @@ export default function StyleguideClient() {
                   items={[
                     {
                       title: 'What time is the service?',
-                      content: 'Sundays at 10:00 AM. Doors open thirty minutes early.',
+                      content: 'Sundays at 09:00 AM. Doors open thirty minutes early.',
                     },
                     {
                       title: 'What should I wear?',

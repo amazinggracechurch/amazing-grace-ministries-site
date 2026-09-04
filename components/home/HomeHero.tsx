@@ -104,7 +104,7 @@ export default function HomeHero() {
         <Reveal delay={3}>
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4">
             <p className="text-body-sm font-semibold tracking-wide text-white/70">
-              Sundays 10:00 AM · {site.address.street}, {site.address.city}, {site.address.state}
+              Sundays 09:00 AM · {site.address.street}, {site.address.city}, {site.address.state}
             </p>
             <div className="flex items-center gap-2" role="tablist" aria-label="Hero photographs">
               {slides.map((slide, i) => (

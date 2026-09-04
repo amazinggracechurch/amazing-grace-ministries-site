@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     template: "%s | Amazing Grace Ministries MN",
   },
   description:
-    "Amazing Grace Ministries is a Christ-centered church in Saint Paul, Minnesota. Join us Sundays at 10:00 AM — 715 Edgerton Street, Saint Paul, MN 55130.",
+    "Amazing Grace Ministries is a Christ-centered church in Saint Paul, Minnesota. Join us Sundays at 09:00 AM — 715 Edgerton Street, Saint Paul, MN 55130.",
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -36,14 +36,14 @@ export const metadata: Metadata = {
     siteName: "Amazing Grace Ministries MN",
     title: "Amazing Grace Ministries MN — A Church in Saint Paul, Minnesota",
     description:
-      "A Christ-centered church in Saint Paul, Minnesota. Sundays at 10:00 AM — 715 Edgerton Street, Saint Paul, MN 55130.",
+      "A Christ-centered church in Saint Paul, Minnesota. Sundays at 09:00 AM — 715 Edgerton Street, Saint Paul, MN 55130.",
     images: [{ url: "/images/hero-worship.jpg", width: 1200, height: 630, alt: "Amazing Grace Ministries MN" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Amazing Grace Ministries MN",
     description:
-      "A Christ-centered church in Saint Paul, Minnesota. Sundays at 10:00 AM.",
+      "A Christ-centered church in Saint Paul, Minnesota. Sundays at 09:00 AM.",
     images: ["/images/hero-worship.jpg"],
   },
   manifest: "/manifest.json",
