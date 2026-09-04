@@ -54,17 +54,19 @@ export async function POST(request: Request) {
 
   const body = await request.text()
 
-  let event: Stripe.Event
-  try {
-    event = getStripe().webhooks.constructEvent(
-      body,
-      signature,
-      env.stripeWebhook().STRIPE_WEBHOOK_SECRET
-    )
-  } catch (error) {
-    console.warn('[stripe webhook] signature verification failed', {
-      message: error instanceof Error ? error.message : 'unknown',
-    })
+  // Try each configured signing secret (test endpoint, production
+  // endpoint carried over from the previous site, local stripe listen).
+  let event: Stripe.Event | null = null
+  for (const secret of env.stripeWebhookSecrets()) {
+    try {
+      event = getStripe().webhooks.constructEvent(body, signature, secret)
+      break
+    } catch {
+      // Not signed with this secret — try the next one.
+    }
+  }
+  if (!event) {
+    console.warn('[stripe webhook] signature verification failed against all configured secrets')
     return Response.json({ error: 'Invalid signature.' }, { status: 400 })
   }
 

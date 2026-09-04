@@ -16,10 +16,6 @@ const stripeServerSchema = z.object({
     .min(1, 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is required'),
 })
 
-const stripeWebhookSchema = z.object({
-  STRIPE_WEBHOOK_SECRET: z.string().min(1, 'STRIPE_WEBHOOK_SECRET is required'),
-})
-
 const youtubeSchema = z.object({
   YOUTUBE_API_KEY: z.string().min(1, 'YOUTUBE_API_KEY is required'),
   YOUTUBE_CHANNEL_ID: z.string().min(1, 'YOUTUBE_CHANNEL_ID is required'),
@@ -44,7 +40,25 @@ function parse<T>(schema: z.ZodType<T>, domain: string): T {
 
 export const env = {
   stripe: () => parse(stripeServerSchema, 'Stripe'),
-  stripeWebhook: () => parse(stripeWebhookSchema, 'Stripe webhook'),
+  /**
+   * All configured webhook signing secrets. Several may exist at once —
+   * e.g. a test-mode endpoint during development and the production
+   * endpoint carried over from the previous site
+   * (PROD_STRIPE_WEBHOOK_SECRET), so launch day is only a URL edit in
+   * Stripe. The receiver tries each. Throws if none are configured.
+   */
+  stripeWebhookSecrets: (): string[] => {
+    const secrets = [
+      process.env.STRIPE_WEBHOOK_SECRET,
+      process.env.PROD_STRIPE_WEBHOOK_SECRET,
+    ].filter((v): v is string => typeof v === 'string' && v.length > 0)
+    if (secrets.length === 0) {
+      throw new Error(
+        '[env] Stripe webhook configuration invalid — set STRIPE_WEBHOOK_SECRET (test/CLI) and/or PROD_STRIPE_WEBHOOK_SECRET'
+      )
+    }
+    return secrets
+  },
   youtube: () => parse(youtubeSchema, 'YouTube'),
   resend: () => parse(resendSchema, 'Resend'),
   siteUrl: () => process.env.NEXT_PUBLIC_SITE_URL ?? 'https://amazinggracemn.org',
@@ -53,7 +67,8 @@ export const env = {
 /** True when a domain's vars are present — for graceful degradation. */
 export const has = {
   stripe: () => stripeServerSchema.safeParse(process.env).success,
-  stripeWebhook: () => stripeWebhookSchema.safeParse(process.env).success,
+  stripeWebhook: () =>
+    Boolean(process.env.STRIPE_WEBHOOK_SECRET || process.env.PROD_STRIPE_WEBHOOK_SECRET),
   youtube: () => youtubeSchema.safeParse(process.env).success,
   resend: () => resendSchema.safeParse(process.env).success,
 }
