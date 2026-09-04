@@ -37,16 +37,16 @@ export default function ProgressBar({
         aria-valuemin={0}
         aria-valuemax={max}
         aria-label={label ?? 'Progress'}
-        className="relative h-2 overflow-hidden rounded-full bg-surface-sunken"
+        className="relative h-2 overflow-hidden bg-surface-sunken"
       >
         {pledged !== undefined && (
           <div
-            className="absolute inset-y-0 left-0 rounded-full bg-accent-subtle"
+            className="absolute inset-y-0 left-0 bg-accent-subtle"
             style={{ width: percent(pledged) }}
           />
         )}
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-accent"
+          className="absolute inset-y-0 left-0 bg-accent"
           style={{ width: percent(value) }}
         />
       </div>

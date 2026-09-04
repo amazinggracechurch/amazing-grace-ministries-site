@@ -19,7 +19,7 @@ export default function ThemeToggle() {
       onClick={() => setTheme(next)}
       aria-label={`Theme: ${LABELS[theme]}. Switch to ${LABELS[next]}.`}
       title={`Theme: ${LABELS[theme]}`}
-      className="w-10 h-10 rounded-full flex items-center justify-center border border-border-subtle bg-surface-raised text-text-secondary transition-colors duration-200 hover:border-border-strong hover:text-accent"
+      className="w-10 h-10 flex items-center justify-center border border-border-subtle bg-surface-raised text-text-secondary transition-colors duration-200 hover:border-border-strong hover:text-accent"
     >
       {theme === 'light' && <Sun className="w-4 h-4" aria-hidden />}
       {theme === 'dark' && <Moon className="w-4 h-4" aria-hidden />}

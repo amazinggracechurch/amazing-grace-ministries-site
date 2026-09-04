@@ -62,7 +62,7 @@ export default function Dialog({ open, onClose, title, children, className }: Di
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="-m-1 rounded-lg p-1 text-text-muted transition-colors duration-200 hover:bg-surface-sunken hover:text-text-primary"
+            className="-m-1 p-1 text-text-muted transition-colors duration-200 hover:bg-surface-sunken hover:text-text-primary"
           >
             <X className="size-5" aria-hidden="true" />
           </button>

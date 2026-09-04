@@ -3,9 +3,9 @@ import { cn } from '@/lib/cn'
 export type SkeletonShape = 'line' | 'circle' | 'block'
 
 const shapeClasses: Record<SkeletonShape, string> = {
-  line: 'h-3 w-full rounded-full',
+  line: 'h-3 w-full',
   circle: 'size-10 rounded-full',
-  block: 'h-24 w-full rounded-card',
+  block: 'h-24 w-full',
 }
 
 type SkeletonProps = {

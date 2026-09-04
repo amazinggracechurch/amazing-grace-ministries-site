@@ -36,7 +36,7 @@ export default function Textarea({
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
         className={cn(
-          'w-full rounded-lg border border-border-subtle bg-surface-raised px-3 py-2 text-body text-text-primary transition-colors duration-200 placeholder:text-text-muted focus:border-accent disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-danger',
+          'w-full border border-border-subtle bg-surface-raised px-3 py-2 text-body text-text-primary transition-colors duration-200 placeholder:text-text-muted focus:border-accent disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-danger',
           className
         )}
         {...textareaProps}

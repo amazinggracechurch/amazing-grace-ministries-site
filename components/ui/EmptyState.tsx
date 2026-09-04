@@ -20,7 +20,7 @@ export default function EmptyState({ icon, title, body, action, className }: Emp
       )}
     >
       {icon && (
-        <div className="mb-1 flex size-12 items-center justify-center rounded-full bg-accent-subtle text-accent">
+        <div className="mb-1 flex size-12 items-center justify-center bg-accent-subtle text-accent">
           {icon}
         </div>
       )}

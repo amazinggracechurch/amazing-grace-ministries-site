@@ -31,7 +31,8 @@ node scripts/screenshot.mjs <url> <out.png> [light|dark] [w] [h] [fullpage]  # d
 
 Everything is built from the tokens in `app/globals.css` — **read it before writing any CSS**.
 
-- **Semantic colors only.** Components use `bg-surface`, `bg-surface-raised`, `text-text-primary`, `text-accent`, `border-border-subtle`, etc. Both themes (warm paper light / dim sanctuary dark) are defined once in `:root` / `.dark`. Do **not** write `dark:` variants for color, and do not reference raw brand colors (`gold`, `dark-*`, `light-*`) in components.
+- **Semantic colors only.** Components use `bg-surface`, `bg-surface-raised`, `text-text-primary`, `text-accent`, `border-border-subtle`, etc. Both themes (crisp white light / showroom near-black dark) are defined once in `:root` / `.dark`. Do **not** write `dark:` variants for color, and do not reference raw brand colors in components. The accent (BMW-inspired blue `#1c69d4`) is for **interactive elements only** — never decoration or large surfaces.
+- **Angular geometry.** Zero border-radius on UI chrome (buttons, cards, inputs, badges); no shadows — depth comes from dark/light section contrast. Functional shapes (avatars, radios) stay round.
 - **Type scale only.** `text-display-xl` → `text-caption` plus the `eyebrow` utility. Arbitrary `text-[Npx]` classes are banned — CI should grep clean for `text-\[[0-9]+px\]`.
 - **Primitives** in `components/ui/` (Button, Input, Dialog, Drawer, Tabs, Toast, Reveal, …) and **section archetypes** in `components/layout/` (Section, SectionHeading, SplitSection, FullBleed, PullQuote, ScrollRail). Vary section archetypes; no two adjacent sections may share one.
 - **Motion** is defined globally: `.reveal` / `.is-visible` (fade + 14px rise, expo-out, trigger-once) via `components/ui/Reveal.tsx`; `prefers-reduced-motion` is honored in the base layer.

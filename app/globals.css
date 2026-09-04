@@ -5,39 +5,39 @@
 /* ---------------------------------------------------------------------------
    Brand palette (raw) — do not reference these directly in components.
    Use the semantic tokens below (surface / text-* / accent) so theming
-   stays centralized.
+   stays centralized. BMW Blue is for interactive elements only, never
+   decoration or large surfaces.
 --------------------------------------------------------------------------- */
 @theme {
-  --color-gold: #c9a84c;
-  --color-gold-light: #e2c97e;
-  --color-gold-dark: #a07c2a;
-  --color-gold-subtle: #f5ecd4;
+  --color-brand-blue: #1c69d4;
+  --color-brand-blue-focus: #0653b6;
 
   /* Typography */
   --font-display: var(--font-cormorant), Georgia, serif;
   --font-body: var(--font-nunito), system-ui, sans-serif;
 
-  /* Type scale — the only font sizes in the system */
+  /* Type scale — the only font sizes in the system.
+     Line-heights stay tight (1.15–1.5): compressed, efficient. */
   --text-display-xl: clamp(3.5rem, 8vw, 7rem);
-  --text-display-xl--line-height: 0.98;
+  --text-display-xl--line-height: 1.1;
   --text-display-lg: clamp(2.75rem, 5vw, 4.5rem);
-  --text-display-lg--line-height: 1.0;
+  --text-display-lg--line-height: 1.15;
   --text-display-md: clamp(2rem, 3.5vw, 3rem);
-  --text-display-md--line-height: 1.05;
+  --text-display-md--line-height: 1.2;
   --text-heading: 1.5rem;
-  --text-heading--line-height: 1.2;
+  --text-heading--line-height: 1.25;
   --text-subheading: 1.125rem;
-  --text-subheading--line-height: 1.4;
+  --text-subheading--line-height: 1.35;
   --text-body: 1rem;
-  --text-body--line-height: 1.65;
+  --text-body--line-height: 1.5;
   --text-body-sm: 0.875rem;
-  --text-body-sm--line-height: 1.6;
+  --text-body-sm--line-height: 1.45;
   --text-caption: 0.75rem;
-  --text-caption--line-height: 1.5;
+  --text-caption--line-height: 1.4;
   --text-eyebrow: 0.6875rem;
   --text-eyebrow--line-height: 1.4;
 
-  --tracking-display: -0.015em;
+  --tracking-display: -0.01em;
   --tracking-eyebrow: 0.18em;
 
   /* Section rhythm — varied on purpose, not uniform */
@@ -45,10 +45,11 @@
   --spacing-section: 6rem; /* 96 */
   --spacing-section-loose: 9rem; /* 144 */
 
-  --radius-card: 0.75rem;
-
-  --shadow-card: 0 1px 2px rgba(20, 17, 13, 0.05), 0 8px 24px rgba(20, 17, 13, 0.07);
-  --shadow-lifted: 0 2px 4px rgba(20, 17, 13, 0.06), 0 16px 40px rgba(20, 17, 13, 0.12);
+  /* Angular geometry: zero radius, no exceptions.
+     Depth comes from dark/light section contrast, not shadows. */
+  --radius-card: 0px;
+  --shadow-card: none;
+  --shadow-lifted: none;
 }
 
 /* ---------------------------------------------------------------------------
@@ -72,43 +73,45 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
-  --color-focus: var(--accent);
+  --color-focus: var(--focus);
 }
 
 :root {
-  --surface: #faf8f4;
+  --surface: #ffffff;
   --surface-raised: #ffffff;
-  --surface-sunken: #f1ece1;
-  --border-subtle: #e5ddcb;
-  --border-strong: #c9bda1;
-  --text-primary: #201b12;
-  --text-secondary: #4d4636;
-  --text-muted: #6e6552;
-  --accent: #a07c2a;
-  --accent-hover: #866823;
-  --accent-subtle: #f3ead2;
+  --surface-sunken: #f4f4f4;
+  --border-subtle: #e5e5e5;
+  --border-strong: #bbbbbb;
+  --text-primary: #262626;
+  --text-secondary: #4a4a4a;
+  --text-muted: #757575;
+  --accent: #1c69d4;
+  --accent-hover: #0653b6;
+  --accent-subtle: #e8f0fc;
   --on-accent: #ffffff;
-  --success: #2e7d4f;
+  --success: #1e7e46;
   --warning: #b45309;
-  --danger: #b42318;
+  --danger: #c02525;
+  --focus: #0653b6;
 }
 
 .dark {
-  --surface: #14110d;
-  --surface-raised: #1e1a14;
-  --surface-sunken: #0d0b08;
-  --border-subtle: #2e2820;
-  --border-strong: #4a4131;
-  --text-primary: #f2ede0;
-  --text-secondary: #c9c0ac;
-  --text-muted: #9a917c;
-  --accent: #c9a84c;
-  --accent-hover: #e2c97e;
-  --accent-subtle: #2b2414;
-  --on-accent: #14110d;
-  --success: #5cb88a;
+  --surface: #0e0e0e;
+  --surface-raised: #1a1a1a;
+  --surface-sunken: #060606;
+  --border-subtle: #2a2a2a;
+  --border-strong: #4d4d4d;
+  --text-primary: #f5f5f5;
+  --text-secondary: #c4c4c4;
+  --text-muted: #9e9e9e;
+  --accent: #5e9bf0;
+  --accent-hover: #8ab6f5;
+  --accent-subtle: #12233d;
+  --on-accent: #0e0e0e;
+  --success: #4cb57c;
   --warning: #e0a458;
   --danger: #e0655a;
+  --focus: #8ab6f5;
 }
 
 @layer base {
@@ -129,7 +132,6 @@
   :where(a, button, input, select, textarea, [tabindex]):focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
-    border-radius: 2px;
   }
 
   /* Theme cross-fade — enabled only after hydration to avoid a flash */

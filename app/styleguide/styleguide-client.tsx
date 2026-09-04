@@ -150,7 +150,7 @@ function Swatch({ token, className }: { token: string; className: string }) {
     <div className="flex items-center gap-3">
       <span
         aria-hidden="true"
-        className={cn('size-10 shrink-0 rounded-lg border border-border-subtle', className)}
+        className={cn('size-10 shrink-0 border border-border-subtle', className)}
       />
       <code className="text-caption text-text-secondary">{token}</code>
     </div>
@@ -213,7 +213,7 @@ function DrawerDemo() {
                 <a
                   href="#overlays"
                   onClick={() => setOpen(false)}
-                  className="block rounded-lg px-3 py-2 text-body text-text-secondary transition-colors duration-200 hover:bg-surface-sunken hover:text-text-primary"
+                  className="block px-3 py-2 text-body text-text-secondary transition-colors duration-200 hover:bg-surface-sunken hover:text-text-primary"
                 >
                   {item}
                 </a>

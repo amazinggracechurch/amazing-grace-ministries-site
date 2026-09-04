@@ -31,7 +31,7 @@ function pageItems(page: number, totalPages: number): PageItem[] {
 }
 
 const controlClasses =
-  'flex size-9 items-center justify-center rounded-lg text-body-sm font-semibold transition-colors duration-200'
+  'flex size-9 items-center justify-center text-body-sm font-semibold transition-colors duration-200'
 
 export default function Pagination({
   page,

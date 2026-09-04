@@ -84,7 +84,7 @@ export default function Navbar() {
             <ThemeToggle />
             <Link
               href="/plan-your-visit"
-              className="bg-accent text-on-accent hover:bg-accent-hover font-body font-bold text-caption uppercase tracking-[0.1em] px-5 py-2.5 rounded-sm transition-colors duration-200"
+              className="bg-accent text-on-accent hover:bg-accent-hover font-body font-bold text-caption uppercase tracking-[0.1em] px-5 py-2.5 transition-colors duration-200"
             >
               Join Us Sunday
             </Link>
@@ -125,7 +125,7 @@ export default function Navbar() {
           <Link
             href="/plan-your-visit"
             onClick={() => setMenuOpen(false)}
-            className="w-full text-center bg-accent text-on-accent hover:bg-accent-hover font-body font-bold text-caption uppercase tracking-[0.1em] py-3 rounded-sm transition-colors duration-200"
+            className="w-full text-center bg-accent text-on-accent hover:bg-accent-hover font-body font-bold text-caption uppercase tracking-[0.1em] py-3 transition-colors duration-200"
           >
             Join Us Sunday
           </Link>

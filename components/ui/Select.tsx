@@ -39,7 +39,7 @@ export default function Select({
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           className={cn(
-            'w-full appearance-none rounded-lg border border-border-subtle bg-surface-raised px-3 py-2 pr-10 text-body text-text-primary transition-colors duration-200 focus:border-accent disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-danger',
+            'w-full appearance-none border border-border-subtle bg-surface-raised px-3 py-2 pr-10 text-body text-text-primary transition-colors duration-200 focus:border-accent disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-danger',
             className
           )}
           {...selectProps}
