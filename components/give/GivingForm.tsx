@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import SectionHeading from '@/components/layout/SectionHeading'
 import SplitSection from '@/components/layout/SplitSection'
@@ -9,61 +10,87 @@ import Input from '@/components/ui/Input'
 import RadioGroup from '@/components/ui/RadioGroup'
 import Reveal from '@/components/ui/Reveal'
 import Select from '@/components/ui/Select'
+import Spinner from '@/components/ui/Spinner'
 import { cn } from '@/lib/cn'
+import {
+  FREQUENCIES,
+  FREQUENCY_LABELS,
+  FUNDS,
+  FUND_LABELS,
+  type Frequency,
+  type IntentResponse,
+} from '@/lib/donations/shared'
+import { chargeTotalCents, feeCents, formatUsd } from '@/lib/money'
+
+// The Stripe.js SDK only loads on this page, after a gift intent exists.
+const PaymentStep = dynamic(() => import('./PaymentStep'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex justify-center py-8">
+      <Spinner />
+    </div>
+  ),
+})
 
 const PRESET_AMOUNTS = [25, 50, 100, 250, 500, 1000]
 
-const FUNDS = [
-  'General Fund',
-  'Building Fund',
-  'Missions & Outreach',
-  'Youth Ministry',
-  'Benevolence Fund',
-]
+const FREQUENCY_OPTIONS = FREQUENCIES.map((value) => ({
+  value,
+  label: FREQUENCY_LABELS[value],
+}))
 
-const FREQUENCIES = [
-  { value: 'one-time', label: 'One-time' },
-  { value: 'weekly', label: 'Weekly' },
-  { value: 'biweekly', label: 'Biweekly' },
-  { value: 'monthly', label: 'Monthly' },
-]
+const EMAIL_PATTERN = /^\S+@\S+\.\S+$/
 
-/** Stripe-style card processing fee: 2.9% + $0.30. */
-const FEE_RATE = 0.029
-const FEE_FIXED = 0.3
+type Phase = 'form' | 'creating' | 'payment'
 
-function formatUSD(n: number) {
-  return `$${n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+type GivingFormProps = {
+  /** Server-detected Stripe configuration; when false the form stays in its pre-launch state. */
+  stripeEnabled: boolean
 }
 
 /**
- * The giving form — a complete, controlled flow ready for the Stripe
- * Payment Element to slot into the submit step. Until the API keys land,
- * the submit button stays disabled and the caption says so honestly.
+ * The giving form. Phase 1: validates and creates a PaymentIntent (one-time)
+ * or Subscription (recurring) via /api/donations/intent — the client sends
+ * amount/fund/frequency/coverFee/email, never a total. Phase 2: the Stripe
+ * Payment Element mounts in the same aside, so the form simply grows a
+ * payment section instead of navigating away.
  */
-export default function GivingForm() {
+export default function GivingForm({ stripeEnabled }: GivingFormProps) {
   const [preset, setPreset] = useState<number | null>(50)
   const [custom, setCustom] = useState('')
   const [customTouched, setCustomTouched] = useState(false)
-  const [fund, setFund] = useState('General Fund')
-  const [frequency, setFrequency] = useState('one-time')
+  const [fund, setFund] = useState<(typeof FUNDS)[number]>('general')
+  const [frequency, setFrequency] = useState<Frequency>('one-time')
   const [coverFee, setCoverFee] = useState(false)
+  const [email, setEmail] = useState('')
+  const [emailTouched, setEmailTouched] = useState(false)
+  const [phase, setPhase] = useState<Phase>('form')
+  const [payment, setPayment] = useState<IntentResponse | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const customParsed =
     custom !== '' && !Number.isNaN(Number(custom)) ? Number(custom) : null
   const rawAmount = preset ?? customParsed
   // A gift must be at least $1; anything below is treated as no amount.
   const amount = rawAmount !== null && rawAmount >= 1 ? rawAmount : null
-  const fee = amount !== null ? amount * FEE_RATE + FEE_FIXED : null
-  const total = amount !== null ? (coverFee && fee !== null ? amount + fee : amount) : null
+  const amountCents = amount !== null ? Math.round(amount * 100) : null
+  const fee = amountCents !== null ? feeCents(amountCents) : null
+  const totalCents = amountCents !== null ? chargeTotalCents(amountCents, coverFee) : null
 
   const customError =
     customTouched && custom !== '' && amount === null
       ? 'Enter a gift of at least $1.'
       : undefined
 
-  const frequencyLabel =
-    FREQUENCIES.find((f) => f.value === frequency)?.label ?? 'One-time'
+  const emailRequired = frequency !== 'one-time'
+  const emailError =
+    (emailTouched || phase !== 'form') && emailRequired && email.trim() === ''
+      ? 'An email address is required for recurring gifts.'
+      : emailTouched && email.trim() !== '' && !EMAIL_PATTERN.test(email.trim())
+        ? 'Please enter a valid email address.'
+        : undefined
+
+  const frequencyLabel = FREQUENCY_LABELS[frequency]
   const submitSuffix = frequency === 'one-time' ? 'Now' : frequencyLabel
 
   const handleCustomChange = (value: string) => {
@@ -72,6 +99,46 @@ export default function GivingForm() {
       setCustom(value)
       setPreset(null)
     }
+  }
+
+  const handleSubmit = async () => {
+    if (!stripeEnabled || amountCents === null || phase === 'creating') return
+    setEmailTouched(true)
+    if (emailRequired && email.trim() === '') return
+    if (email.trim() !== '' && !EMAIL_PATTERN.test(email.trim())) return
+
+    setSubmitError(null)
+    setPhase('creating')
+    try {
+      const res = await fetch('/api/donations/intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amountCents,
+          fund,
+          frequency,
+          coverFee,
+          email: email.trim() !== '' ? email.trim() : undefined,
+          source: 'web',
+        }),
+      })
+      const data = (await res.json()) as IntentResponse & { error?: string }
+      if (!res.ok) {
+        throw new Error(data.error ?? 'Something went wrong. Please try again.')
+      }
+      setPayment(data)
+      setPhase('payment')
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : 'Something went wrong. Please try again.'
+      )
+      setPhase('form')
+    }
+  }
+
+  const handleBack = () => {
+    setPayment(null)
+    setPhase('form')
   }
 
   return (
@@ -90,29 +157,45 @@ export default function GivingForm() {
             main={
               <form
                 aria-label="Online giving"
-                onSubmit={(e) => e.preventDefault()}
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  void handleSubmit()
+                }}
                 className="flex flex-col gap-8"
               >
                 <RadioGroup
                   legend="Frequency"
                   name="frequency"
-                  options={FREQUENCIES}
+                  options={FREQUENCY_OPTIONS}
                   value={frequency}
-                  onValueChange={setFrequency}
+                  onValueChange={(value) => setFrequency(value as Frequency)}
                   direction="horizontal"
                 />
 
                 <Select
                   label="Giving fund"
                   value={fund}
-                  onChange={(e) => setFund(e.target.value)}
+                  onChange={(e) => setFund(e.target.value as (typeof FUNDS)[number])}
                 >
-                  {FUNDS.map((f) => (
-                    <option key={f} value={f}>
-                      {f}
+                  {FUNDS.map((value) => (
+                    <option key={value} value={value}>
+                      {FUND_LABELS[value]}
                     </option>
                   ))}
                 </Select>
+
+                <Input
+                  label={emailRequired ? 'Email address' : 'Email address (optional)'}
+                  hint={emailRequired ? 'Needed to set up your recurring gift.' : 'For your receipt.'}
+                  error={emailError}
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onBlur={() => setEmailTouched(true)}
+                  required={emailRequired}
+                />
 
                 <fieldset>
                   <legend className="mb-1 text-body-sm font-semibold text-text-primary">
@@ -172,7 +255,7 @@ export default function GivingForm() {
                   <div className="flex items-baseline justify-between gap-4">
                     <dt className="text-text-secondary">Gift amount</dt>
                     <dd className="font-semibold text-text-primary">
-                      {amount !== null ? formatUSD(amount) : '—'}
+                      {amountCents !== null ? formatUsd(amountCents) : '—'}
                     </dd>
                   </div>
                   <div className="flex items-baseline justify-between gap-4">
@@ -181,41 +264,87 @@ export default function GivingForm() {
                   </div>
                   <div className="flex items-baseline justify-between gap-4">
                     <dt className="text-text-secondary">Fund</dt>
-                    <dd className="text-right font-semibold text-text-primary">{fund}</dd>
+                    <dd className="text-right font-semibold text-text-primary">
+                      {FUND_LABELS[fund]}
+                    </dd>
                   </div>
                   {coverFee && fee !== null && (
                     <div className="flex items-baseline justify-between gap-4">
                       <dt className="text-text-secondary">Processing fee (2.9% + $0.30)</dt>
-                      <dd className="font-semibold text-text-primary">{formatUSD(fee)}</dd>
+                      <dd className="font-semibold text-text-primary">{formatUsd(fee)}</dd>
                     </div>
                   )}
                 </dl>
                 <div className="mt-6 flex items-baseline justify-between gap-4 border-t border-border-subtle pt-6">
                   <p className="text-body font-semibold text-text-primary">Total</p>
                   <p className="font-display text-heading font-medium text-text-primary">
-                    {total !== null ? formatUSD(total) : '—'}
+                    {totalCents !== null ? formatUsd(totalCents) : '—'}
                   </p>
                 </div>
 
-                {/* TODO: enable when the Stripe Payment Element lands with API keys. */}
-                <Button
-                  type="submit"
-                  size="lg"
-                  disabled
-                  className="mt-8 w-full"
-                >
-                  Give {total !== null ? formatUSD(total) : '—'} {submitSuffix}
-                </Button>
-                <p className="mt-4 text-caption text-text-muted">
-                  Online giving launches soon. Give in person on Sundays, or{' '}
-                  <Link
-                    href="/contact"
-                    className="font-semibold text-accent underline-offset-4 transition-colors duration-200 hover:text-accent-hover hover:underline"
-                  >
-                    contact us
-                  </Link>{' '}
-                  and we will help you give another way.
-                </p>
+                {phase === 'payment' && payment ? (
+                  <div className="mt-8 border-t border-border-subtle pt-8">
+                    <p className="mb-6 text-body-sm font-semibold text-text-primary">
+                      Payment details
+                    </p>
+                    <PaymentStep
+                      clientSecret={payment.clientSecret}
+                      totalCents={payment.totalCents}
+                      submitSuffix={submitSuffix}
+                      subscriptionId={payment.subscriptionId}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-4"
+                      onClick={handleBack}
+                    >
+                      Edit gift details
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <Button
+                      type="submit"
+                      size="lg"
+                      disabled={!stripeEnabled || amountCents === null || phase === 'creating'}
+                      onClick={() => void handleSubmit()}
+                      className="mt-8 w-full"
+                    >
+                      {phase === 'creating' ? (
+                        <>
+                          <Spinner size="sm" /> Preparing secure payment…
+                        </>
+                      ) : (
+                        <>
+                          Give {totalCents !== null ? formatUsd(totalCents) : '—'} {submitSuffix}
+                        </>
+                      )}
+                    </Button>
+                    {submitError && (
+                      <p role="alert" className="mt-4 text-body-sm text-danger">
+                        {submitError}
+                      </p>
+                    )}
+                    {stripeEnabled ? (
+                      <p className="mt-4 text-caption text-text-muted">
+                        Payments are processed securely by Stripe. Your card details never touch
+                        our servers.
+                      </p>
+                    ) : (
+                      <p className="mt-4 text-caption text-text-muted">
+                        Online giving launches soon. Give in person on Sundays, or{' '}
+                        <Link
+                          href="/contact"
+                          className="font-semibold text-accent underline-offset-4 transition-colors duration-200 hover:text-accent-hover hover:underline"
+                        >
+                          contact us
+                        </Link>{' '}
+                        and we will help you give another way.
+                      </p>
+                    )}
+                  </>
+                )}
               </div>
             }
           />

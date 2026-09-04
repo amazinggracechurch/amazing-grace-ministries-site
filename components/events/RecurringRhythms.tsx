@@ -17,6 +17,20 @@ const recurring = [
     time: '09:00 AM Every Sunday',
     loc: 'Main Sanctuary',
   },
+   {
+    title: 'BIBLE STUDY',
+    subtitle: 'Digging For Hidden Treasures',
+    desc: 'On Mondays, we study to shew ourselves approved as workmen that need not be afraid, rightly dividing the word of truth.',
+    time: 'Every Monday',
+    loc: dialIn,
+  },
+   {
+    title: 'Christlike',
+    subtitle: 'Young Adult Bible Study',
+    desc: 'A time for youth and young adults to come together to study the Bible and learn about God. It is a great opportunity for young people to get to know each other and to build relationships with each other.',
+    time: 'Every Tuesday',
+    loc: 'Main Sanctuary',
+  },
   {
     title: 'HOUR OF BATTLE',
     subtitle: 'Wednesday Midweek Service',
@@ -24,13 +38,7 @@ const recurring = [
     time: 'Every Wednesday',
     loc: dialIn,
   },
-  {
-    title: 'BIBLE STUDY',
-    subtitle: 'Digging For Hidden Treasures',
-    desc: 'On Mondays, we study to shew ourselves approved as workmen that need not be afraid, rightly dividing the word of truth.',
-    time: 'Every Monday',
-    loc: dialIn,
-  },
+ 
   {
     title: 'OPEN HEAVENS',
     subtitle: 'Monthly Prayer Gathering',

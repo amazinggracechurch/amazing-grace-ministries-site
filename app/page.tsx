@@ -9,8 +9,10 @@ import SermonHighlight from "@/components/home/SermonHighlight";
 import EventsRail from "@/components/home/EventsRail";
 import GivingBand from "@/components/home/GivingBand";
 import Reveal from "@/components/ui/Reveal";
+import { getRecentSermons } from "@/lib/youtube";
 
-export default function Home() {
+export default async function Home() {
+  const sermons = await getRecentSermons(4);
   return (
     <main className="flex min-h-screen flex-col bg-surface font-body text-text-primary antialiased">
       <Navbar />
@@ -18,7 +20,7 @@ export default function Home() {
       <HomeHero />
       <StorySection />
       <ServiceTimesBand />
-      <SermonHighlight />
+      <SermonHighlight sermons={sermons} />
       <section aria-label="Our family" className="py-20 md:py-28">
         <Reveal>
           <PullQuote cite="Rooted in faith. Reaching the world.">

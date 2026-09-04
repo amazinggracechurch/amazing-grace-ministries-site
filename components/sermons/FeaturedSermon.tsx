@@ -1,50 +1,55 @@
-import Image from 'next/image'
-import { BookOpen, ChevronRight, Clock, Play } from 'lucide-react'
+'use client'
+import { ChevronRight, Clock, Play } from 'lucide-react'
 import Section from '@/components/layout/Section'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/ui/Reveal'
-import { site } from '@/lib/site'
+import SermonPlayer from '@/components/sermons/SermonPlayer'
+import { formatAirDate, formatDuration, type Sermon } from '@/lib/youtube'
+
+type FeaturedSermonProps = {
+  sermon?: Sermon
+}
 
 /**
- * This week's message — details on the left, one large 16:9 poster with a
- * play affordance linking to the YouTube channel on the right. Mirrors the
- * home SermonHighlight composition; the YouTube data layer drops into this
- * layout later.
+ * This week's message — details on the left, one large 16:9 player with
+ * embed-on-click on the right. Data-driven from the YouTube channel;
+ * renders nothing when there is no data.
  */
-export default function FeaturedSermon() {
+export default function FeaturedSermon({ sermon }: FeaturedSermonProps) {
+  if (!sermon) return null
+
+  const duration = formatDuration(sermon.durationSeconds)
+  const airDate = formatAirDate(sermon.publishedAt)
+
   return (
     <Section rhythm="normal" id="latest">
       <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-12">
         <Reveal className="lg:col-span-5">
           <p className="eyebrow text-accent">This Week&apos;s Message</p>
           <h2 className="mt-4 font-display text-display-md font-medium tracking-display text-text-primary">
-            &ldquo;The Promise Is Still Yes&rdquo;
+            {sermon.title}
           </h2>
-          <p className="mt-3 font-display text-subheading italic text-accent">Numbers 23:19</p>
           <p className="mt-6 max-w-md text-body text-text-secondary">
-            God&apos;s promises are not subject to circumstances, seasons, or setbacks. In this
-            powerful message, Pastor Nnaemeka Uchegbu walks us through why the promise over your
-            life remains yes and amen &mdash; no matter what you&apos;re facing.
+            The latest message from Amazing Grace Ministries MN. Watch right here, or on our
+            YouTube channel where every service is available free, anytime.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-body-sm text-text-muted">
-            <span className="inline-flex items-center gap-1.5">
-              <Clock className="size-3.5" aria-hidden />
-              42 min
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <BookOpen className="size-3.5" aria-hidden />
-              Numbers 23:19
-            </span>
-            <span>May 12, 2025</span>
+            {duration && (
+              <span className="inline-flex items-center gap-1.5">
+                <Clock className="size-3.5" aria-hidden />
+                {duration}
+              </span>
+            )}
+            {airDate && <span>{airDate}</span>}
           </div>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Button href={site.socials.youtube} target="_blank" rel="noopener noreferrer" size="lg">
+            <Button href={sermon.url} target="_blank" rel="noopener noreferrer" size="lg">
               <Play className="size-4" aria-hidden />
-              Watch Now
+              Watch on YouTube
             </Button>
             <Button
-              href="mailto:?subject=The%20Promise%20Is%20Still%20Yes%20-%20Amazing%20Grace%20Ministries%20MN&body=Check%20out%20this%20sermon%20from%20Amazing%20Grace%20Ministries%20MN:%20The%20Promise%20Is%20Still%20Yes."
+              href={`mailto:?subject=${encodeURIComponent(`${sermon.title} - Amazing Grace Ministries MN`)}&body=${encodeURIComponent(`Check out this message from Amazing Grace Ministries MN: ${sermon.url}`)}`}
               variant="secondary"
               size="lg"
             >
@@ -55,36 +60,12 @@ export default function FeaturedSermon() {
         </Reveal>
 
         <Reveal delay={1} className="lg:col-span-7">
-          <a
-            href={site.socials.youtube}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative block aspect-video overflow-hidden"
-            aria-label="Play Featured Sermon"
-          >
-            <Image
-              src="/images/hero-stage.jpg"
-              alt="Worship leaders on stage during a service at Amazing Grace Ministries"
-              fill
-              sizes="(min-width: 1024px) 58vw, 100vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            />
-            <span
-              aria-hidden
-              className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"
-            />
-            <span className="absolute left-4 top-4">
-              <Badge variant="accent">Latest Message</Badge>
-            </span>
-            <span className="absolute inset-0 flex items-center justify-center">
-              <span className="flex size-16 items-center justify-center border border-white/80 bg-black/30 text-white transition-colors duration-200 group-hover:bg-white group-hover:text-black">
-                <Play className="size-6 fill-current" aria-hidden />
-              </span>
-            </span>
-            <span className="absolute bottom-0 left-0 p-6">
-              <span className="eyebrow block text-white/70">Living in the Promise</span>
-            </span>
-          </a>
+          <SermonPlayer
+            sermon={sermon}
+            sizes="(min-width: 1024px) 58vw, 100vw"
+            badge={<Badge variant="accent">Latest Message</Badge>}
+            overlay={<span className="eyebrow block text-white/70">{airDate}</span>}
+          />
         </Reveal>
       </div>
     </Section>

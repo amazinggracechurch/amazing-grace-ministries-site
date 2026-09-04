@@ -7,6 +7,7 @@ import GivingForm from '@/components/give/GivingForm'
 import GivingOptions from '@/components/give/GivingOptions'
 import ImpactSection from '@/components/give/ImpactSection'
 import ScriptureSection from '@/components/give/ScriptureSection'
+import { has } from '@/lib/env'
 
 export const metadata = {
   title: 'Give | Amazing Grace Ministries MN',
@@ -20,7 +21,7 @@ export default function GivePage() {
       <AnnouncementBar />
       <GiveHero />
       <GivingOptions />
-      <GivingForm />
+      <GivingForm stripeEnabled={has.stripe()} />
       <ImpactSection />
       <ScriptureSection />
       <GiveFAQ />

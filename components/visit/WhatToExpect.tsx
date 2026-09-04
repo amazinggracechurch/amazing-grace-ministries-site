@@ -11,7 +11,12 @@ const steps = [
   {
     label: 'Worship',
     title: 'Spirit-Filled Worship',
-    body: "We open with engaging, Spirit-filled worship. Feel free to stand, sing along, or simply take it all in — there's no pressure.",
+    body: "We open with engaging, Spirit-filled worship led by our heavenly worship team, the Amazing Voices. Feel free to stand, sing along, or simply take it all in — there's no pressure.",
+  },
+  {
+    label: 'Sunday School',
+    title: 'Engaging Bible Teaching',
+    body: 'Sunday School takes place during the main service. Our experienced teachers lead engaging and age-appropriate Bible lessons that will help your children grow in their faith.  designed to speak to real life. Messages typically run 35–45 minutes.',
   },
   {
     label: 'The Message',
