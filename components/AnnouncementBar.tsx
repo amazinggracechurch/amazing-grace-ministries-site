@@ -1,48 +1,31 @@
 import { Clock, Calendar, PlayCircle } from 'lucide-react'
+import Link from 'next/link'
 
+/**
+ * Slim service-times strip. Sits below the fixed navbar and scrolls
+ * away with the page. Content will come from settings/site in Phase 2.
+ */
 export default function AnnouncementBar() {
   return (
-    <div
-      className="
-        mt-[72px] py-[9px] px-6 border-b border-dark-border bg-light-charcoal
-        dark:bg-dark-black dark:border-dark-border
-      "
-    >
-      <div
-        className="
-          max-w-7xl mx-auto flex flex-wrap items-center justify-center sm:justify-start gap-4 md:gap-8
-        "
-      >
-        {/* Sundays */}
-        <div className="flex items-center gap-2">
-          <Clock className="w-[13px] h-[13px] text-gold" />
-          <span className="font-body font-bold text-[11px] uppercase tracking-[0.12em] text-white/80 dark:text-white/70">
-            SUNDAYS 10:00 AM
-          </span>
-        </div>
-
-        <span className="hidden sm:inline text-white/20 text-sm">|</span>
-
-        {/* Wednesdays */}
-        <div className="flex items-center gap-2">
-          <Calendar className="w-[13px] h-[13px] text-gold" />
-          <span className="font-body font-bold text-[11px] uppercase tracking-[0.12em] text-white/80 dark:text-white/70">
-            WEDNESDAYS 7:00 PM
-          </span>
-        </div>
-
-        <span className="hidden md:inline text-white/20 text-sm">|</span>
-
-        {/* Watch Online */}
-        <a
+    <div className="mt-[72px] border-b border-border-subtle bg-surface-sunken">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-5 gap-y-1 px-6 py-2 text-caption font-semibold tracking-wide text-text-secondary">
+        <span className="inline-flex items-center gap-1.5">
+          <Clock className="size-3.5 text-accent" aria-hidden />
+          SUNDAYS 10:00 AM
+        </span>
+        <span aria-hidden className="hidden text-border-strong sm:inline">|</span>
+        <span className="inline-flex items-center gap-1.5">
+          <Calendar className="size-3.5 text-accent" aria-hidden />
+          WEDNESDAYS 7:00 PM
+        </span>
+        <span aria-hidden className="hidden text-border-strong md:inline">|</span>
+        <Link
           href="/sermons"
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          className="inline-flex items-center gap-1.5 text-accent transition-colors duration-200 hover:text-accent-hover"
         >
-          <PlayCircle className="w-[13px] h-[13px] text-gold" />
-          <span className="font-body font-bold text-[11px] uppercase tracking-[0.12em] text-white/80 dark:text-white/70">
-            WATCH ONLINE
-          </span>
-        </a>
+          <PlayCircle className="size-3.5" aria-hidden />
+          WATCH ONLINE
+        </Link>
       </div>
     </div>
   )

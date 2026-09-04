@@ -45,7 +45,7 @@ export default function FullBleed({
       {/* Legibility gradient, anchored to the bottom where content sits */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-gradient-to-t from-black/70 via-black/25 to-transparent"
+        className="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 via-black/40 to-black/10"
       />
       <div
         className={`w-full max-w-7xl mx-auto px-6 pb-16 pt-32 text-white ${

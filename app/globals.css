@@ -183,3 +183,17 @@
   text-transform: uppercase;
   font-weight: 700;
 }
+
+/* Slow hero drift — the ONE continuous animation permitted on a page.
+   Disabled automatically under prefers-reduced-motion (base layer). */
+@utility ken-burns {
+  animation: ken-burns 24s ease-in-out infinite alternate;
+}
+@keyframes ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}

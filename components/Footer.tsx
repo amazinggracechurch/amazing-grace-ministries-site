@@ -1,201 +1,123 @@
-import { Clock, MapPin, Navigation, Facebook, Instagram, Youtube, Music2, Twitter } from 'lucide-react'
+import { Facebook, Instagram, Youtube, MapPin, ArrowUpRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { site } from '@/lib/site'
+
+const quickLinks = [
+  { label: 'About Us', href: '/about' },
+  { label: 'Plan Your Visit', href: '/plan-your-visit' },
+  { label: 'Sermons', href: '/sermons' },
+  { label: 'Events', href: '/events' },
+  { label: 'Give', href: '/give' },
+  { label: 'Contact Us', href: '/contact' },
+]
+
+const socials = [
+  { label: 'Facebook', href: site.socials.facebook, Icon: Facebook },
+  { label: 'Instagram', href: site.socials.instagram, Icon: Instagram },
+  { label: 'YouTube', href: site.socials.youtube, Icon: Youtube },
+]
 
 export default function Footer() {
-  const quickLinks1 = [
-    { label: 'About Us', href: '/about' },
-    { label: 'Events', href: '/events' },
-    { label: 'Sermons', href: '/sermons' },
-  ]
-
-  const quickLinks2 = [
-  { label: 'Give', href: '/give' },
-    { label: 'Visit', href: '/plan-your-visit' },
-    { label: 'Contact Us', href: '/contact' },
-  ]
-
-  const socials = [
-    { icon: Facebook, href: 'https://web.facebook.com/amazinggracemn' },
-    { icon: Instagram, href: 'https://www.instagram.com/amazinggracemn' },
-    { icon: Youtube, href: 'https://www.youtube.com/channel/UCuM5Q6r7F1LpC8u6Y5C5pQ' },
-  ]
-
   return (
-    <footer className="bg-dark-black text-white pt-0">
-      {/* Top Gold Ribbon */}
-      <div className="w-full h-1 bg-gold" />
-
-      <div className="max-w-7xl mx-auto px-6 pt-16 pb-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr] gap-12">
-          {/* Col 1 — Brand + Links + Social */}
-          <div className="flex flex-col">
-            {/* Logo zone */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-14 h-14 rounded-full border border-dark-border bg-light-mid flex items-center justify-center font-body font-bold text-white text-xs tracking-widest dark:bg-dark-card">
-                    <Image
-                    src="/logo-white.svg"
-                    alt="Amazing Grace Ministries Logo"
-                    width={48}
-                    height={48}
-                    priority
-                    className="object-contain hidden dark:block"
-                  />
-                  <Image
-                    src="/logo-dark.svg"
-                    alt="Amazing Grace Ministries Logo"
-                    width={48}
-                    height={48}
-                    priority
-                    className="object-contain dark:hidden"
-                  />
-              </div>
-              <div>
-                <h2 className="font-display font-bold text-xl text-white">
+    <footer className="dark bg-surface text-text-primary">
+      <div className="mx-auto max-w-7xl px-6 py-16 md:py-20">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
+          {/* Brand */}
+          <div className="md:col-span-5">
+            <Link href="/" className="flex items-center gap-3">
+              <Image
+                src="/logo-white.svg"
+                alt=""
+                width={44}
+                height={44}
+                className="object-contain"
+              />
+              <span>
+                <span className="block font-display text-heading font-semibold leading-tight">
                   Amazing Grace
-                </h2>
-                <p className="font-body text-xs text-white/45 tracking-widest uppercase">
-                  Ministries MN
-                </p>
-              </div>
+                </span>
+                <span className="eyebrow block text-text-muted">Ministries MN</span>
+              </span>
+            </Link>
+            <p className="mt-6 max-w-sm font-display text-subheading italic text-text-secondary">
+              &ldquo;{site.heroVerse.text}&rdquo; — {site.heroVerse.reference}
+            </p>
+            <div className="mt-6 flex gap-3">
+              {socials.map(({ label, href, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Amazing Grace Ministries on ${label}`}
+                  className="flex size-10 items-center justify-center border border-border-subtle text-text-secondary transition-colors duration-200 hover:border-accent hover:text-accent"
+                >
+                  <Icon className="size-4" aria-hidden />
+                </a>
+              ))}
             </div>
+          </div>
 
-            <p className="font-display italic text-sm text-white/35 max-w-[240px] mb-8">
-              &ldquo;Surely the Lord is in this place.&rdquo; &mdash; Genesis 28:16
+          {/* Quick links */}
+          <nav aria-label="Footer" className="md:col-span-3">
+            <h2 className="eyebrow text-text-muted">Quick Links</h2>
+            <ul className="mt-5 space-y-3">
+              {quickLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-body-sm text-text-secondary transition-colors duration-200 hover:text-accent"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Service times + location */}
+          <div className="md:col-span-4">
+            <h2 className="eyebrow text-text-muted">Service Times</h2>
+            <ul className="mt-5 space-y-2 text-body-sm text-text-secondary">
+              <li>Sundays: 10:00 AM</li>
+              <li>Mondays: Bible Study</li>
+              <li>Wednesdays: Hour of Battle</li>
+              <li>1st Saturday: Open Heavens</li>
+            </ul>
+            <p className="mt-4 text-caption text-text-muted">
+              Audio:{' '}
+              {site.dialIn.numbers.map((n) => (
+                <a key={n} href={`tel:+1${n.replaceAll('-', '')}`} className="transition-colors duration-200 hover:text-accent">
+                  {n}
+                </a>
+              )).reduce<React.ReactNode[]>((acc, el, i) => (i === 0 ? [el] : [...acc, ' or ', el]), [])}
+              {' '}· Code {site.dialIn.code}
             </p>
 
-            {/* Quick Links */}
-            <span className="font-body font-bold text-[11px] uppercase tracking-[0.14em] text-gold underline underline-offset-4 mb-4">
-              QUICK LINKS
-            </span>
-
-            {/* Tier 1 */}
-            <div className="flex flex-wrap gap-x-2 items-center mb-1.5">
-              {quickLinks1.map((link, idx) => (
-                <div key={link.label} className="flex items-center gap-2">
-                  <Link
-                    href={link.href}
-                    className="font-body text-[13px] text-white/60 hover:text-white transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                  {idx < quickLinks1.length - 1 && (
-                    <span className="text-dark-border text-sm">|</span>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Tier 2 */}
-            <div className="flex flex-wrap gap-x-2 items-center">
-              {quickLinks2.map((link, idx) => (
-                <div key={link.label} className="flex items-center gap-2">
-                  <Link
-                    href={link.href}
-                    className="font-body text-[13px] text-white/60 hover:text-white transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                  {idx < quickLinks2.length - 1 && (
-                    <span className="text-dark-border text-sm">|</span>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Divider */}
-            <div className="border-t border-dark-border my-6 w-full" />
-
-            {/* Follow Us */}
-            <span className="font-body font-semibold text-[12px] uppercase tracking-widest text-white underline underline-offset-4 mb-3">
-              FOLLOW US
-            </span>
-
-            {/* Social Icons */}
-            <div className="flex gap-3">
-              {socials.map((social, idx) => {
-                const IconComponent = social.icon
-                return (
-                  <a
-                    key={idx}
-                    href={social.href}
-                    className="
-                      w-9 h-9 rounded-full bg-dark-card border border-dark-border flex items-center justify-center text-white/60 hover:bg-dark-elevated hover:text-gold hover:border-gold transition-all duration-300
-                    "
-                    aria-label="Social Link"
-                  >
-                    <IconComponent className="w-[15px] h-[15px]" />
-                  </a>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Col 2 — Service Times */}
-          <div>
-            <Clock className="w-8 h-8 text-gold mb-3" />
-            <h3 className="font-body font-bold text-[12px] uppercase tracking-widest text-white underline underline-offset-4 mb-3">
-              SERVICE TIMES
-            </h3>
-            <div className="font-body text-[14px] text-white/60 leading-[2.2]">
-              <p>Sundays: 10:00 AM</p>
-              <p>Mondays: Bible Study</p>
-              <p>Wednesdays: Hour of Battle</p>
-              <p>1st Saturday: Open Heavens</p>
-            </div>
-            <div className="font-body text-[12px] text-white/40 mt-4 leading-relaxed">
-              <p>Audio: 470-480-9523 or 425-436-6364</p>
-              <p>Code: 198407</p>
-            </div>
-          </div>
-
-          {/* Col 3 — Location */}
-          <div>
-            <MapPin className="w-8 h-8 text-gold mb-3" />
-            <h3 className="font-body font-bold text-[12px] uppercase tracking-widest text-white underline underline-offset-4 mb-3">
-              LOCATION
-            </h3>
-            <div className="font-body text-[14px] text-white/60 leading-loose">
-              <p>715 Edgerton Street</p>
-              <p>Saint Paul, MN 55130</p>
-              <p>United States</p>
-            </div>
-
+            <h2 className="eyebrow mt-8 text-text-muted">Location</h2>
+            <p className="mt-4 flex items-start gap-2 text-body-sm text-text-secondary">
+              <MapPin className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
+              <span>
+                {site.address.street}
+                <br />
+                {site.address.city}, {site.address.state} {site.address.zip}
+              </span>
+            </p>
             <a
-              href="https://maps.app.goo.gl/yT1Xi1r9cJRBvYLz9"
+              href={site.address.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-body font-semibold text-[13px] text-gold hover:text-gold-dark flex items-center gap-1 mt-3"
+              className="group mt-3 inline-flex items-center gap-1.5 text-body-sm font-semibold text-accent"
             >
-              <Navigation className="w-[13px] h-[13px]" />
               Get Directions
+              <ArrowUpRight className="size-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
             </a>
           </div>
         </div>
 
-        {/* Stats Strip */}
-        <div className="border-t border-dark-border mt-10 pt-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div>
-            <div className="font-display font-bold text-[36px] text-gold leading-none">1400+</div>
-            <div className="font-body text-[10px] uppercase tracking-widest text-white/40 mt-1">MESSAGES PREACHED</div>
-          </div>
-          <div>
-            <div className="font-display font-bold text-[36px] text-gold leading-none">100%</div>
-            <div className="font-body text-[10px] uppercase tracking-widest text-white/40 mt-1">FULFILLED MEMBERS</div>
-          </div>
-          <div>
-            <div className="font-display font-bold text-[36px] text-gold leading-none">20+</div>
-            <div className="font-body text-[10px] uppercase tracking-widest text-white/40 mt-1">INSPIRING LEADERS</div>
-          </div>
-          <div>
-            <div className="font-display font-bold text-[36px] text-gold leading-none">100+</div>
-            <div className="font-body text-[10px] uppercase tracking-widest text-white/40 mt-1">COUNTRIES</div>
-          </div>
-        </div>
-
-        {/* Copyright Bar */}
-        <div className="border-t border-dark-border mt-10 pt-6 text-center font-body text-[12px] text-white/30">
-          &copy; 2026 Amazing Grace Ministries MN &mdash; All Rights Reserved
+        <div className="mt-14 border-t border-border-subtle pt-6 text-caption text-text-muted">
+          © {new Date().getFullYear()} Amazing Grace Ministries MN — All Rights Reserved
         </div>
       </div>
     </footer>

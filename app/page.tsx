@@ -1,33 +1,34 @@
-import AboutSection from "@/components/AboutSection";
 import AnnouncementBar from "@/components/AnnouncementBar";
-import EventsSection from "@/components/EventsSection";
 import Footer from "@/components/Footer";
-import Hero from "@/components/Hero";
-import MinistriesSection from "@/components/MinistriesSection";
-import MissionSection from "@/components/MissionSection";
 import Navbar from "@/components/Navbar";
-import NextSteps from "@/components/NextSteps";
-import OurPrograms from "@/components/OurPrograms";
-import PlanYourVisit from "@/components/PlanYourVisit";
-import ScrollReveal from "@/components/ScrollReveal";
-import SermonSection from "@/components/SermonSection";
+import PullQuote from "@/components/layout/PullQuote";
+import HomeHero from "@/components/home/HomeHero";
+import StorySection from "@/components/home/StorySection";
+import ServiceTimesBand from "@/components/home/ServiceTimesBand";
+import SermonHighlight from "@/components/home/SermonHighlight";
+import EventsRail from "@/components/home/EventsRail";
+import GivingBand from "@/components/home/GivingBand";
+import Reveal from "@/components/ui/Reveal";
 
 export default function Home() {
   return (
-    <main className="flex flex-col min-h-screen bg-light-white dark:bg-dark-charcoal font-body antialiased transition-colors duration-300">
-        <Navbar />
-        <AnnouncementBar />
-        <Hero />
-        <AboutSection />
-        <OurPrograms />
-        <PlanYourVisit />
-        <MissionSection />
-        <NextSteps />
-        <EventsSection />
-        <MinistriesSection />
-        <SermonSection />
-        <Footer />
-        <ScrollReveal />
-      </main>
+    <main className="flex min-h-screen flex-col bg-surface font-body text-text-primary antialiased">
+      <Navbar />
+      <AnnouncementBar />
+      <HomeHero />
+      <StorySection />
+      <ServiceTimesBand />
+      <SermonHighlight />
+      <section aria-label="Our family" className="py-20 md:py-28">
+        <Reveal>
+          <PullQuote cite="Rooted in faith. Reaching the world.">
+            &ldquo;We are the Amazing Family.&rdquo;
+          </PullQuote>
+        </Reveal>
+      </section>
+      <EventsRail />
+      <GivingBand />
+      <Footer />
+    </main>
   );
 }
