@@ -12,7 +12,7 @@ import { getStripe } from '@/lib/stripe'
  * automatically). Optional presets: ?amount=50&fund=missions.
  *
  * - amount: human dollars ("50", "25.50"), must be >= $1.
- * - fund: one of the donation funds; defaults to 'general' when omitted.
+ * - fund: one of the donation funds; defaults to 'Offering' when omitted.
  * - Missing/invalid amount (or invalid fund) -> redirect to /give, where the
  *   donor can enter everything manually. Checkout requires a fixed price, so
  *   there is no sensible "custom amount" session to fall back to.
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     return Response.redirect(giveUrl, 303)
   }
 
-  let fund: Fund = 'general'
+  let fund: Fund = 'Offering'
   if (fundParam !== null) {
     if (!(FUNDS as readonly string[]).includes(fundParam)) {
       return Response.redirect(giveUrl, 303)

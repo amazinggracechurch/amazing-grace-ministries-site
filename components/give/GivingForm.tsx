@@ -59,7 +59,7 @@ export default function GivingForm({ stripeEnabled }: GivingFormProps) {
   const [preset, setPreset] = useState<number | null>(50)
   const [custom, setCustom] = useState('')
   const [customTouched, setCustomTouched] = useState(false)
-  const [fund, setFund] = useState<(typeof FUNDS)[number]>('general')
+  const [fund, setFund] = useState<(typeof FUNDS)[number]>('Offering')
   const [frequency, setFrequency] = useState<Frequency>('one-time')
   const [coverFee, setCoverFee] = useState(false)
   const [email, setEmail] = useState('')

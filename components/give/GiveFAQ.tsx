@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     q: 'Can I give to a specific fund?',
-    a: 'Yes. When giving online, you can designate your gift to a specific fund — including our General Fund, Building Fund, Missions & Outreach, Youth Ministry, or Benevolence Fund.',
+    a: 'Yes. When giving online, you can designate your gift to a specific fund — including our General Offering, Tithes, Missions & Outreach, Building Fund, Welfare Fund, or Children\u2019s Ministry.',
   },
   {
     q: 'What if I want to cancel my recurring gift?',
