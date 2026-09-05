@@ -1,6 +1,7 @@
 import 'server-only'
 import { z } from 'zod'
 import { adminDb } from '@/lib/firebase/admin'
+import { has } from '@/lib/env'
 import { parseBlocks, type Block } from '@/lib/posts/blocks'
 
 /**
@@ -99,15 +100,26 @@ function byPublishAtDesc(a: Post, b: Post): number {
 
 /** Every published post past its publishAt, newest first. */
 async function fetchPublishedPosts(): Promise<Post[]> {
-  const snapshot = await adminDb()
-    .collection('posts')
-    .where('status', '==', 'published')
-    .get()
-  const now = new Date()
-  return snapshot.docs
-    .map((doc) => toPost(doc.id, doc.data()))
-    .filter((post): post is Post => post !== null && isVisible(post, now))
-    .sort(byPublishAtDesc)
+  // Graceful when Firebase Admin isn't configured (e.g. a fresh Vercel
+  // project before env vars are set) — the blog renders its empty state
+  // instead of failing the build/request.
+  if (!has.firebaseAdmin()) return []
+  try {
+    const snapshot = await adminDb()
+      .collection('posts')
+      .where('status', '==', 'published')
+      .get()
+    const now = new Date()
+    return snapshot.docs
+      .map((doc) => toPost(doc.id, doc.data()))
+      .filter((post): post is Post => post !== null && isVisible(post, now))
+      .sort(byPublishAtDesc)
+  } catch (error) {
+    console.warn('[posts] fetch failed, rendering empty state', {
+      message: error instanceof Error ? error.message : 'unknown',
+    })
+    return []
+  }
 }
 
 export async function listPublishedPosts(options: ListPostsOptions = {}): Promise<ListPostsResult> {
