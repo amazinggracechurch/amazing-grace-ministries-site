@@ -31,7 +31,7 @@ function donationFromMetadata(
   status: string,
   amountCents: number,
   metadata: Stripe.Metadata | null,
-  ids: { paymentIntentId?: string | null; subscriptionId?: string | null }
+  ids: { paymentIntentId?: string | null; subscriptionId?: string | null; method?: string | null }
 ): DonationRecord {
   return {
     eventId,
@@ -45,6 +45,8 @@ function donationFromMetadata(
     donorEmail: metadata?.donorEmail || null,
     coveredFee: metadata?.coveredFee === 'true',
     source: sourceOf(metadata?.source),
+    projectId: metadata?.projectId ?? null,
+    method: ids.method ?? null,
     status,
     createdAt: new Date().toISOString(),
   }
@@ -91,6 +93,7 @@ export async function POST(request: Request) {
         await store.recordDonation(
           donationFromMetadata(event.id, 'succeeded', pi.amount, pi.metadata, {
             paymentIntentId: pi.id,
+            method: pi.payment_method_types?.[0] ?? null,
           })
         )
         // Funding-project credit (spec §7.4): the donation is already

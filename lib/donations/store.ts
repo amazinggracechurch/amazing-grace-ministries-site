@@ -34,6 +34,10 @@ export type DonationRecord = {
   donorEmail: string | null
   coveredFee: boolean
   source: 'web' | 'qr' | 'unknown'
+  /** Project this gift was designated to, when any (from intent metadata). */
+  projectId?: string | null
+  /** Stripe payment method type, e.g. 'card' | 'us_bank_account', when known. */
+  method?: string | null
   /** 'succeeded' | 'failed' | 'refunded' | ... */
   status: string
   createdAt: string

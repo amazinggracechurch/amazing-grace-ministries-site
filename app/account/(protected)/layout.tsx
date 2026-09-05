@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { redirect } from 'next/navigation'
+import AccountNav from '@/components/account/AccountNav'
 import { getSessionUser } from '@/lib/auth/session'
 
 /**
@@ -20,5 +21,10 @@ export default async function ProtectedAccountLayout({
   if (!user) {
     redirect('/account/signin?next=/account')
   }
-  return children
+  return (
+    <>
+      <AccountNav />
+      {children}
+    </>
+  )
 }
