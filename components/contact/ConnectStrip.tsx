@@ -1,19 +1,19 @@
 import { ArrowRight, Facebook, Instagram, Youtube } from 'lucide-react'
 import Link from 'next/link'
 import Reveal from '@/components/ui/Reveal'
-import { site } from '@/lib/site'
-
-const socials = [
-  { icon: Facebook, label: 'Facebook', href: site.socials.facebook },
-  { icon: Instagram, label: 'Instagram', href: site.socials.instagram },
-  { icon: Youtube, label: 'YouTube', href: site.socials.youtube },
-]
+import { getSiteSettings } from '@/lib/site-settings'
 
 /**
  * Stay-connected band — always dark, the quiet closing moment of the page.
  * Social links are small inline affordances; the type does the work.
  */
-export default function ConnectStrip() {
+export default async function ConnectStrip() {
+  const settings = await getSiteSettings()
+  const socials = [
+    { icon: Facebook, label: 'Facebook', href: settings.socials.facebook },
+    { icon: Instagram, label: 'Instagram', href: settings.socials.instagram },
+    { icon: Youtube, label: 'YouTube', href: settings.socials.youtube },
+  ]
   return (
     <section className="dark bg-surface text-text-primary">
       <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">

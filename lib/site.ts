@@ -1,9 +1,11 @@
 /**
  * Church contact details and recurring schedule.
  *
- * Single source of truth for content that used to be hardcoded across
- * components. This becomes the `settings/site` Firestore document in
- * Phase 2 — components must import from here, never hardcode.
+ * Seed and fallback for the `settings/site` Firestore document — public
+ * pages read that document via lib/site-settings.ts and get these
+ * constants when Firestore is unconfigured or unreachable. Fields the
+ * settings schema doesn't cover (name, shortName, heroVerse, ein,
+ * taxStatus) are still read from here directly.
  */
 export const site = {
   name: 'Amazing Grace Ministries',

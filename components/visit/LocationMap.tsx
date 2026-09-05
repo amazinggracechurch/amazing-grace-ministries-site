@@ -2,6 +2,7 @@ import { ArrowUpRight } from 'lucide-react'
 import Section from '@/components/layout/Section'
 import SectionHeading from '@/components/layout/SectionHeading'
 import Reveal from '@/components/ui/Reveal'
+import { getSiteSettings } from '@/lib/site-settings'
 import { site } from '@/lib/site'
 
 const MAP_EMBED_SRC =
@@ -12,7 +13,8 @@ const MAP_EMBED_SRC =
  * sharp border. Below it: address + directions, parking, contact, and
  * the dial-in numbers as large tappable tel: links.
  */
-export default function LocationMap() {
+export default async function LocationMap() {
+  const settings = await getSiteSettings()
   return (
     <Section rhythm="normal" sunken>
       <Reveal>
@@ -22,7 +24,7 @@ export default function LocationMap() {
       <Reveal delay={1}>
         <div className="mt-12 border border-border-strong">
           <iframe
-            title={`Map to ${site.name}, ${site.address.street}, ${site.address.city}, ${site.address.state} ${site.address.zip}`}
+            title={`Map to ${site.name}, ${settings.address.street}, ${settings.address.city}, ${settings.address.state} ${settings.address.zip}`}
             src={MAP_EMBED_SRC}
             loading="lazy"
             allowFullScreen
@@ -36,13 +38,13 @@ export default function LocationMap() {
         <Reveal delay={1}>
           <p className="eyebrow text-text-muted">Address</p>
           <p className="mt-3 font-display text-heading font-medium text-text-primary">
-            {site.address.street}
+            {settings.address.street}
           </p>
           <p className="mt-1 text-body text-text-secondary">
-            {site.address.city}, {site.address.state} {site.address.zip}
+            {settings.address.city}, {settings.address.state} {settings.address.zip}
           </p>
           <a
-            href={site.address.mapsUrl}
+            href={settings.address.mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="group mt-4 inline-flex items-center gap-1.5 text-body-sm font-semibold text-accent transition-colors duration-200 hover:text-accent-hover"
@@ -67,24 +69,24 @@ export default function LocationMap() {
           <p className="eyebrow text-text-muted">Contact</p>
           <p className="mt-3 text-body-sm font-semibold text-text-muted">Phone</p>
           <a
-            href={`tel:+1${site.contact.phone.replace(/\D/g, '')}`}
+            href={`tel:+1${settings.contact.phone.replace(/\D/g, '')}`}
             className="mt-1 block text-body font-semibold text-text-primary transition-colors duration-200 hover:text-accent"
           >
-            {site.contact.phone}
+            {settings.contact.phone}
           </a>
           <p className="mt-4 text-body-sm font-semibold text-text-muted">Email</p>
           <a
-            href={`mailto:${site.contact.email}`}
+            href={`mailto:${settings.contact.email}`}
             className="mt-1 block text-body font-semibold text-text-primary transition-colors duration-200 hover:text-accent"
           >
-            {site.contact.email}
+            {settings.contact.email}
           </a>
         </Reveal>
 
         <Reveal delay={4}>
           <p className="eyebrow text-text-muted">Join by Phone</p>
           <div className="mt-3 space-y-1">
-            {site.dialIn.numbers.map((number) => (
+            {settings.dialIn.numbers.map((number) => (
               <a
                 key={number}
                 href={`tel:+1${number.replaceAll('-', '')}`}
@@ -95,7 +97,7 @@ export default function LocationMap() {
             ))}
           </div>
           <p className="mt-2 text-body-sm text-text-secondary">
-            Access Code: {site.dialIn.code}
+            Access Code: {settings.dialIn.code}
           </p>
         </Reveal>
       </div>

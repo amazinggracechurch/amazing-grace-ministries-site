@@ -1,31 +1,31 @@
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/ui/Reveal'
-import { site } from '@/lib/site'
-
-const ways = [
-  {
-    label: 'Visit In Person',
-    lines: ['Sundays at 09:00 AM', 'Main Sanctuary'],
-    action: { text: 'Get Directions', href: site.address.mapsUrl, external: true },
-  },
-  {
-    label: 'Watch Online',
-    lines: ['Live every Sunday at 09:00 AM', 'Available online'],
-    action: { text: 'Watch Live', href: site.socials.youtube, external: true },
-  },
-  {
-    label: 'Join by Phone',
-    lines: ['470-480-9523 or 425-436-6364', 'Access Code: 198407'],
-    action: { text: 'Dial In', href: 'tel:4704809523', external: false },
-  },
-]
+import { getSiteSettings } from '@/lib/site-settings'
 
 /**
  * Closing CTA — a dark centered statement band with the three ways to
  * join, each one typographic rather than an icon card.
  */
-export default function VisitContactCTA() {
+export default async function VisitContactCTA() {
+  const settings = await getSiteSettings()
+  const ways = [
+    {
+      label: 'Visit In Person',
+      lines: ['Sundays at 09:00 AM', 'Main Sanctuary'],
+      action: { text: 'Get Directions', href: settings.address.mapsUrl, external: true },
+    },
+    {
+      label: 'Watch Online',
+      lines: ['Live every Sunday at 09:00 AM', 'Available online'],
+      action: { text: 'Watch Live', href: settings.socials.youtube, external: true },
+    },
+    {
+      label: 'Join by Phone',
+      lines: ['470-480-9523 or 425-436-6364', 'Access Code: 198407'],
+      action: { text: 'Dial In', href: 'tel:4704809523', external: false },
+    },
+  ]
   return (
     <section aria-labelledby="visit-cta-heading" className="dark bg-surface text-text-primary">
       <div className="mx-auto max-w-7xl px-6 py-24 text-center md:py-32">

@@ -3,19 +3,19 @@ import Section from '@/components/layout/Section'
 import Reveal from '@/components/ui/Reveal'
 import ContactForm from './ContactForm'
 import { departments } from './departments'
-import { site } from '@/lib/site'
-
-const socials = [
-  { icon: Facebook, label: 'Facebook', href: site.socials.facebook },
-  { icon: Instagram, label: 'Instagram', href: site.socials.instagram },
-  { icon: Youtube, label: 'YouTube', href: site.socials.youtube },
-]
+import { getSiteSettings } from '@/lib/site-settings'
 
 /**
  * The working core of the page: an asymmetric split — a typographic
  * contact/departments block on the left, the message form on the right.
  */
-export default function ContactMain() {
+export default async function ContactMain() {
+  const settings = await getSiteSettings()
+  const socials = [
+    { icon: Facebook, label: 'Facebook', href: settings.socials.facebook },
+    { icon: Instagram, label: 'Instagram', href: settings.socials.instagram },
+    { icon: Youtube, label: 'YouTube', href: settings.socials.youtube },
+  ]
   return (
     <Section rhythm="normal">
       <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-16">
@@ -60,14 +60,14 @@ export default function ContactMain() {
               <dt className="eyebrow text-text-muted">Address</dt>
               <dd className="mt-1 text-body text-text-primary">
                 <a
-                  href={site.address.mapsUrl}
+                  href={settings.address.mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline-offset-4 transition-colors duration-200 hover:text-accent hover:underline"
                 >
-                  {site.address.street}
+                  {settings.address.street}
                   <br />
-                  {site.address.city}, {site.address.state} {site.address.zip}
+                  {settings.address.city}, {settings.address.state} {settings.address.zip}
                 </a>
               </dd>
             </div>
@@ -75,10 +75,10 @@ export default function ContactMain() {
               <dt className="eyebrow text-text-muted">Phone</dt>
               <dd className="mt-1 text-body text-text-primary">
                 <a
-                  href={`tel:+1${site.contact.phone.replace(/\D/g, '')}`}
+                  href={`tel:+1${settings.contact.phone.replace(/\D/g, '')}`}
                   className="underline-offset-4 transition-colors duration-200 hover:text-accent hover:underline"
                 >
-                  {site.contact.phone}
+                  {settings.contact.phone}
                 </a>
               </dd>
             </div>
@@ -86,17 +86,17 @@ export default function ContactMain() {
               <dt className="eyebrow text-text-muted">Email</dt>
               <dd className="mt-1 text-body text-text-primary">
                 <a
-                  href={`mailto:${site.contact.email}`}
+                  href={`mailto:${settings.contact.email}`}
                   className="underline-offset-4 transition-colors duration-200 hover:text-accent hover:underline"
                 >
-                  {site.contact.email}
+                  {settings.contact.email}
                 </a>
               </dd>
             </div>
             <div className="border-b border-border-subtle py-4">
               <dt className="eyebrow text-text-muted">Join services by phone</dt>
               <dd className="mt-1 text-body text-text-primary">
-                {site.dialIn.numbers.map((n) => (
+                {settings.dialIn.numbers.map((n) => (
                   <a
                     key={n}
                     href={`tel:+1${n.replaceAll('-', '')}`}
@@ -110,7 +110,7 @@ export default function ContactMain() {
                 )}
               </dd>
               <dd className="mt-1 text-body-sm text-text-muted">
-                Access Code: {site.dialIn.code}
+                Access Code: {settings.dialIn.code}
               </dd>
             </div>
           </dl>
@@ -137,7 +137,7 @@ export default function ContactMain() {
 
         {/* ===== Right — the form ===== */}
         <Reveal delay={1} className="lg:col-span-7">
-          <ContactForm />
+          <ContactForm contact={settings.contact} />
         </Reveal>
       </div>
     </Section>

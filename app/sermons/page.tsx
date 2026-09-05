@@ -8,6 +8,7 @@ import SermonSeries from '@/components/sermons/SermonSeries'
 import SermonBrowser from '@/components/sermons/SermonBrowser'
 import YouTubeCTA from '@/components/sermons/YouTubeCTA'
 import { getRecentSermons } from '@/lib/youtube'
+import { getSiteSettings } from '@/lib/site-settings'
 
 export const metadata = {
   title: 'Sermons | Amazing Grace Ministries MN',
@@ -15,6 +16,7 @@ export const metadata = {
 }
 
 export default async function SermonsPage() {
+  const settings = await getSiteSettings()
   const sermons = await getRecentSermons(4)
   const latest = sermons[0]
 
@@ -44,9 +46,9 @@ export default async function SermonsPage() {
       <AnnouncementBar />
       <SermonsHero />
       <FeaturedSermon sermon={latest} />
-      <LatestServices sermons={sermons} />
+      <LatestServices sermons={sermons} youtubeUrl={settings.socials.youtube} />
       <SermonSeries />
-      <SermonBrowser />
+      <SermonBrowser youtubeUrl={settings.socials.youtube} />
       <YouTubeCTA />
       <Footer />
     </main>

@@ -9,11 +9,11 @@ import Badge from '@/components/ui/Badge'
 import Reveal from '@/components/ui/Reveal'
 import SermonPlayer from '@/components/sermons/SermonPlayer'
 import { formatAirDate, formatDuration, type Sermon } from '@/lib/sermons'
-import { site } from '@/lib/site'
 import { cn } from '@/lib/cn'
 
 type LatestServicesProps = {
   sermons: Sermon[]
+  youtubeUrl: string
 }
 
 /**
@@ -22,7 +22,7 @@ type LatestServicesProps = {
  * row, a snap-scroll rail on mobile. Clicking a small poster promotes
  * it into the large player. Renders nothing when there is no data.
  */
-export default function LatestServices({ sermons }: LatestServicesProps) {
+export default function LatestServices({ sermons, youtubeUrl }: LatestServicesProps) {
   const [activeIndex, setActiveIndex] = useState(0)
 
   if (sermons.length === 0) return null
@@ -76,7 +76,7 @@ export default function LatestServices({ sermons }: LatestServicesProps) {
           lede="Missed a Sunday? Watch the latest services from Amazing Grace Ministries MN — every message, free, anytime."
         />
         <a
-          href={site.socials.youtube}
+          href={youtubeUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="group mb-1 inline-flex items-center gap-2 text-body font-semibold text-accent"

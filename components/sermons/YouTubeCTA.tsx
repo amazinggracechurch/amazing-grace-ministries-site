@@ -2,7 +2,7 @@ import { Bell, ExternalLink, Youtube } from 'lucide-react'
 import FullBleed from '@/components/layout/FullBleed'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/ui/Reveal'
-import { site } from '@/lib/site'
+import { getSiteSettings } from '@/lib/site-settings'
 
 const stats = [
   { number: '1400+', label: 'Messages Preached' },
@@ -14,7 +14,8 @@ const stats = [
  * Subscribe CTA — full-bleed black-and-white worship photograph, the
  * page's closing centered statement.
  */
-export default function YouTubeCTA() {
+export default async function YouTubeCTA() {
+  const settings = await getSiteSettings()
   return (
     <FullBleed
       src="/images/worship-band-bw.jpg"
@@ -31,13 +32,13 @@ export default function YouTubeCTA() {
           new message drops. Every sermon, every series &mdash; available free, forever.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <Button href={site.socials.youtube} target="_blank" rel="noopener noreferrer" size="lg">
+          <Button href={settings.socials.youtube} target="_blank" rel="noopener noreferrer" size="lg">
             <Youtube className="size-4" aria-hidden />
             Subscribe on YouTube
             <ExternalLink className="size-3" aria-hidden />
           </Button>
           <a
-            href={site.socials.youtube}
+            href={settings.socials.youtube}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 border border-white/60 px-6 py-3 text-subheading font-semibold text-white transition-colors duration-200 hover:border-white hover:bg-white/10"

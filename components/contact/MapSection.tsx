@@ -1,13 +1,14 @@
 import { Navigation } from 'lucide-react'
 import Reveal from '@/components/ui/Reveal'
 import SectionHeading from '@/components/layout/SectionHeading'
-import { site } from '@/lib/site'
+import { getSiteSettings } from '@/lib/site-settings'
 
 /**
  * Full-width Google Maps embed — the map itself is the visual, edge to edge.
  * Parking and transit notes sit below as a quiet two-column editorial block.
  */
-export default function MapSection() {
+export default async function MapSection() {
+  const settings = await getSiteSettings()
   return (
     <section className="bg-surface-sunken">
       <div className="mx-auto max-w-7xl px-6 pt-20 pb-12 md:pt-24 md:pb-14">
@@ -23,7 +24,7 @@ export default function MapSection() {
               }
             />
             <a
-              href={site.address.mapsUrl}
+              href={settings.address.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-1.5 text-body-sm font-semibold text-text-secondary transition-colors duration-200 hover:text-accent"

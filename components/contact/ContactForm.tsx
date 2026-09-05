@@ -7,9 +7,11 @@ import Textarea from '@/components/ui/Textarea'
 import Select from '@/components/ui/Select'
 import Spinner from '@/components/ui/Spinner'
 import { departments, type DepartmentName } from './departments'
-import { site } from '@/lib/site'
+import type { SiteSettings } from '@/lib/admin/site-settings'
 
-const phoneHref = `tel:+1${site.contact.phone.replace(/\D/g, '')}`
+type ContactFormProps = {
+  contact: SiteSettings['contact']
+}
 
 type Fields = {
   firstName: string
@@ -62,11 +64,12 @@ const errorSummaryId = 'contact-form-errors'
  * form; a missing email backend shows a designed unavailable state with
  * phone/email alternatives instead of a bare failure.
  */
-export default function ContactForm() {
+export default function ContactForm({ contact }: ContactFormProps) {
   const [fields, setFields] = useState<Fields>(emptyFields)
   const [errors, setErrors] = useState<FieldErrors>({})
   const [status, setStatus] = useState<Status>('idle')
   const [serverError, setServerError] = useState<string | null>(null)
+  const phoneHref = `tel:+1${contact.phone.replace(/\D/g, '')}`
 
   const set = <K extends keyof Fields>(key: K, value: Fields[K]) => {
     setFields((prev) => ({ ...prev, [key]: value }))
@@ -190,16 +193,16 @@ export default function ContactForm() {
               href={phoneHref}
               className="mt-1 block text-subheading font-semibold text-text-primary underline-offset-4 transition-colors duration-200 hover:text-accent hover:underline"
             >
-              {site.contact.phone}
+              {contact.phone}
             </a>
           </li>
           <li className="border-b border-border-subtle py-4">
             <p className="eyebrow text-text-muted">Email us</p>
             <a
-              href={`mailto:${site.contact.email}`}
+              href={`mailto:${contact.email}`}
               className="mt-1 block text-subheading font-semibold text-text-primary underline-offset-4 transition-colors duration-200 hover:text-accent hover:underline"
             >
-              {site.contact.email}
+              {contact.email}
             </a>
           </li>
         </ul>
@@ -259,14 +262,14 @@ export default function ContactForm() {
               href={phoneHref}
               className="font-semibold underline-offset-4 hover:underline"
             >
-              {site.contact.phone}
+              {contact.phone}
             </a>{' '}
             ·{' '}
             <a
-              href={`mailto:${site.contact.email}`}
+              href={`mailto:${contact.email}`}
               className="font-semibold underline-offset-4 hover:underline"
             >
-              {site.contact.email}
+              {contact.email}
             </a>
           </p>
         </div>

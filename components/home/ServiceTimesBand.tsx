@@ -1,13 +1,14 @@
 import { ArrowUpRight } from 'lucide-react'
 import Reveal from '@/components/ui/Reveal'
-import { site } from '@/lib/site'
+import { getSiteSettings } from '@/lib/site-settings'
 
 /**
  * Service times as a confident typographic band — always dark, the
  * showroom-contrast moment of the page. No icon cards; the times
  * themselves are the design.
  */
-export default function ServiceTimesBand() {
+export default async function ServiceTimesBand() {
+  const settings = await getSiteSettings()
   return (
     <section aria-labelledby="service-times-heading" className="dark bg-surface text-text-primary">
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
@@ -17,19 +18,19 @@ export default function ServiceTimesBand() {
               Gather With Us
             </h2>
             <a
-              href={site.address.mapsUrl}
+              href={settings.address.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-1.5 text-body-sm font-semibold text-text-secondary transition-colors duration-200 hover:text-accent"
             >
-              {site.address.street}, {site.address.city}, {site.address.state} {site.address.zip}
+              {settings.address.street}, {settings.address.city}, {settings.address.state} {settings.address.zip}
               <ArrowUpRight className="size-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
             </a>
           </div>
         </Reveal>
 
         <dl className="mt-14 grid grid-cols-1 border-t border-border-subtle sm:grid-cols-2 lg:grid-cols-4">
-          {site.services.map((service, i) => (
+          {settings.services.map((service, i) => (
             <Reveal
               key={service.name}
               delay={Math.min(i, 4) as 0 | 1 | 2 | 3 | 4}
@@ -50,7 +51,7 @@ export default function ServiceTimesBand() {
         <Reveal delay={2}>
           <p className="mt-12 text-body-sm text-text-secondary">
             Join by phone:{' '}
-            {site.dialIn.numbers.map((n) => (
+            {settings.dialIn.numbers.map((n) => (
               <a
                 key={n}
                 href={`tel:+1${n.replaceAll('-', '')}`}
@@ -59,7 +60,7 @@ export default function ServiceTimesBand() {
                 {n}
               </a>
             )).reduce<React.ReactNode[]>((acc, el, i) => (i === 0 ? [el] : [...acc, ' or ', el]), [])}
-            {' '}· Code {site.dialIn.code}
+            {' '}· Code {settings.dialIn.code}
           </p>
         </Reveal>
       </div>

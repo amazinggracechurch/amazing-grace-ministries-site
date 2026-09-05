@@ -7,9 +7,9 @@ import { site } from '@/lib/site'
  * The editable `settings/site` document. Seeded from the lib/site.ts
  * constants when the doc doesn't exist yet.
  *
- * NOTE: the public site still reads the lib/site.ts constants directly —
- * this doc is the future source of truth; rewiring public reads is a
- * later task.
+ * NOTE: the public site reads this doc through lib/site-settings.ts
+ * (cached, falling back to the seed constants); lib/site.ts remains the
+ * direct source only for fields this schema doesn't cover.
  */
 
 export const SITE_SETTINGS_DOC = 'settings/site'

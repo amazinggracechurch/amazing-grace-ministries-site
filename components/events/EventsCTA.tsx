@@ -1,13 +1,14 @@
 import { Bell, CalendarDays, MessageCircle } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/ui/Reveal'
-import { site } from '@/lib/site'
+import { getSiteSettings } from '@/lib/site-settings'
 
 /**
  * Closing CTA — a dark inverted band, the centered-statement moment of
  * the page (same inversion pattern as ServiceTimesBand on home).
  */
-export default function EventsCTA() {
+export default async function EventsCTA() {
+  const settings = await getSiteSettings()
   return (
     <section className="dark bg-surface text-text-primary">
       <div className="mx-auto max-w-3xl px-6 py-24 text-center md:py-32">
@@ -24,7 +25,7 @@ export default function EventsCTA() {
         <Reveal delay={1}>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Button
-              href={site.socials.facebook}
+              href={settings.socials.facebook}
               target="_blank"
               rel="noopener noreferrer"
               size="lg"

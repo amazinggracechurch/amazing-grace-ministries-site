@@ -11,42 +11,50 @@ import GivingBand from "@/components/home/GivingBand";
 import Reveal from "@/components/ui/Reveal";
 import { getRecentSermons } from "@/lib/youtube";
 import { getFeaturedProject } from "@/lib/projects";
-import { site } from "@/lib/site";
+import { getSiteSettings } from "@/lib/site-settings";
+import type { SiteSettings } from "@/lib/admin/site-settings";
 import { env } from "@/lib/env";
 
-const churchJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Church",
-  name: "Amazing Grace Ministries MN",
-  url: env.siteUrl(),
-  telephone: site.contact.phone,
-  email: site.contact.email,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: site.address.street,
-    addressLocality: site.address.city,
-    addressRegion: site.address.state,
-    postalCode: site.address.zip,
-    addressCountry: "US",
-  },
-  openingHoursSpecification: [
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: "Sunday",
-      opens: "09:00",
-      closes: "11:30",
+function churchJsonLd(settings: SiteSettings) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Church",
+    name: "Amazing Grace Ministries MN",
+    url: env.siteUrl(),
+    telephone: settings.contact.phone,
+    email: settings.contact.email,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: settings.address.street,
+      addressLocality: settings.address.city,
+      addressRegion: settings.address.state,
+      postalCode: settings.address.zip,
+      addressCountry: "US",
     },
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: "Wednesday",
-      opens: "18:00",
-      closes: "19:30",
-    },
-  ],
-  sameAs: [site.socials.facebook, site.socials.instagram, site.socials.youtube],
-};
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: "Sunday",
+        opens: "09:00",
+        closes: "11:30",
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: "Wednesday",
+        opens: "18:00",
+        closes: "19:30",
+      },
+    ],
+    sameAs: [
+      settings.socials.facebook,
+      settings.socials.instagram,
+      settings.socials.youtube,
+    ],
+  };
+}
 
 export default async function Home() {
+  const settings = await getSiteSettings();
   const sermons = await getRecentSermons(4);
   // Featured campaign for the giving band — Firestore trouble must never
   // take the home page down, so a failure simply renders the generic band.
@@ -56,12 +64,12 @@ export default async function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(churchJsonLd).replace(/</g, "\\u003c"),
+          __html: JSON.stringify(churchJsonLd(settings)).replace(/</g, "\\u003c"),
         }}
       />
       <Navbar />
       <AnnouncementBar />
-      <HomeHero />
+      <HomeHero address={settings.address} youtubeUrl={settings.socials.youtube} />
       <StorySection />
       <ServiceTimesBand />
       <SermonHighlight sermons={sermons} />

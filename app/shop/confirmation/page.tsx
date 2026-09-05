@@ -8,7 +8,7 @@ import ClearCartOnMount from '@/components/shop/ClearCartOnMount'
 import { getOrderByStripeSessionId, orderScanUrl, PICKUP_NOTES, type Order } from '@/lib/shop'
 import { getSessionUser } from '@/lib/auth/session'
 import { formatUsd } from '@/lib/money'
-import { site } from '@/lib/site'
+import { getSiteSettings } from '@/lib/site-settings'
 
 export const metadata: Metadata = {
   title: 'Order Confirmed | Amazing Grace Ministries MN',
@@ -42,6 +42,7 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
       })
     : null
   const user = await getSessionUser()
+  const settings = await getSiteSettings()
   const qr = order ? await qrDataUri(order) : null
 
   return (
@@ -60,7 +61,7 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
                 Your payment was received and we&apos;re preparing your confirmation. This can
                 take a few seconds — a receipt and pickup QR code are on their way to your
                 email. If nothing arrives within a few minutes, contact us at{' '}
-                {site.contact.email}.
+                {settings.contact.email}.
               </p>
               <div className="mt-8">
                 <Button href="/shop" variant="secondary">

@@ -1,6 +1,7 @@
 import { Facebook, Instagram, Youtube, MapPin, ArrowUpRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getSiteSettings } from '@/lib/site-settings'
 import { site } from '@/lib/site'
 
 const quickLinks = [
@@ -14,13 +15,13 @@ const quickLinks = [
   { label: 'Contact Us', href: '/contact' },
 ]
 
-const socials = [
-  { label: 'Facebook', href: site.socials.facebook, Icon: Facebook },
-  { label: 'Instagram', href: site.socials.instagram, Icon: Instagram },
-  { label: 'YouTube', href: site.socials.youtube, Icon: Youtube },
-]
-
-export default function Footer() {
+export default async function Footer() {
+  const settings = await getSiteSettings()
+  const socials = [
+    { label: 'Facebook', href: settings.socials.facebook, Icon: Facebook },
+    { label: 'Instagram', href: settings.socials.instagram, Icon: Instagram },
+    { label: 'YouTube', href: settings.socials.youtube, Icon: Youtube },
+  ]
   return (
     <footer className="dark bg-surface text-text-primary">
       <div className="mx-auto max-w-7xl px-6 py-16 md:py-20">
@@ -89,25 +90,25 @@ export default function Footer() {
             </ul>
             <p className="mt-4 text-caption text-text-muted">
               Audio:{' '}
-              {site.dialIn.numbers.map((n) => (
+              {settings.dialIn.numbers.map((n) => (
                 <a key={n} href={`tel:+1${n.replaceAll('-', '')}`} className="transition-colors duration-200 hover:text-accent">
                   {n}
                 </a>
               )).reduce<React.ReactNode[]>((acc, el, i) => (i === 0 ? [el] : [...acc, ' or ', el]), [])}
-              {' '}· Code {site.dialIn.code}
+              {' '}· Code {settings.dialIn.code}
             </p>
 
             <h2 className="eyebrow mt-8 text-text-muted">Location</h2>
             <p className="mt-4 flex items-start gap-2 text-body-sm text-text-secondary">
               <MapPin className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
               <span>
-                {site.address.street}
+                {settings.address.street}
                 <br />
-                {site.address.city}, {site.address.state} {site.address.zip}
+                {settings.address.city}, {settings.address.state} {settings.address.zip}
               </span>
             </p>
             <a
-              href={site.address.mapsUrl}
+              href={settings.address.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="group mt-3 inline-flex items-center gap-1.5 text-body-sm font-semibold text-accent"

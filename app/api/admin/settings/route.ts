@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache'
 import { adminGuard } from '@/lib/admin/guard'
 import { recordAudit } from '@/lib/audit'
 import {
@@ -6,11 +7,12 @@ import {
   writeSiteSettings,
   SITE_SETTINGS_DOC,
 } from '@/lib/admin/site-settings'
+import { clearSiteSettingsCache } from '@/lib/site-settings'
 
 /**
  * Save the `settings/site` document. POST, admin-only, audited with
- * before/after. (Public pages still read lib/site.ts constants — the
- * read-side swap is a later task.)
+ * before/after. The public read-side cache is cleared so edits show up
+ * immediately on this server (other servers pick them up at TTL expiry).
  */
 export async function POST(request: Request) {
   const guard = await adminGuard()
@@ -36,6 +38,11 @@ export async function POST(request: Request) {
   try {
     const before = await readSiteSettings()
     await writeSiteSettings(parsed.data)
+    clearSiteSettingsCache()
+    // Settings render on nearly every page, including statically
+    // prerendered ones (contact, plan-your-visit) — invalidate everything
+    // so edits are visible on the next request, not the next deploy.
+    revalidatePath('/', 'layout')
 
     await recordAudit({
       actorUid: guard.user.uid,

@@ -16,6 +16,8 @@ import {
   formatEventDate,
   formatEventTimeRange,
 } from '@/lib/dates'
+import { getSiteSettings } from '@/lib/site-settings'
+import type { SiteSettings } from '@/lib/admin/site-settings'
 import { site } from '@/lib/site'
 
 export const dynamic = 'force-dynamic'
@@ -57,7 +59,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-function eventJsonLd(event: ChurchEvent) {
+function eventJsonLd(event: ChurchEvent, settings: SiteSettings) {
   const priced = event.priceCents !== null && event.priceCents > 0
   return {
     '@context': 'https://schema.org',
@@ -71,7 +73,7 @@ function eventJsonLd(event: ChurchEvent) {
     location: {
       '@type': 'Place',
       name: event.location.name,
-      address: event.location.address || site.address.street,
+      address: event.location.address || settings.address.street,
       ...(event.location.lat !== undefined && event.location.lng !== undefined
         ? {
             geo: {
@@ -103,6 +105,7 @@ function eventJsonLd(event: ChurchEvent) {
 export default async function EventPage({ params, searchParams }: PageProps) {
   const { slug } = await params
   const query = await searchParams
+  const settings = await getSiteSettings()
   const event = await loadEvent(slug)
   if (!event) notFound()
 
@@ -121,7 +124,7 @@ export default async function EventPage({ params, searchParams }: PageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(eventJsonLd(event)).replace(/</g, '\\u003c'),
+          __html: JSON.stringify(eventJsonLd(event, settings)).replace(/</g, '\\u003c'),
         }}
       />
       <Navbar />
@@ -178,7 +181,7 @@ export default async function EventPage({ params, searchParams }: PageProps) {
                   <p className="mt-2 text-body-sm text-text-secondary">
                     Your RSVP is being confirmed and a confirmation email is on its
                     way. If it doesn&rsquo;t arrive within a few minutes, contact us
-                    at {site.contact.email}.
+                    at {settings.contact.email}.
                   </p>
                 </div>
               </Reveal>

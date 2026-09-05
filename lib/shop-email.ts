@@ -2,7 +2,7 @@ import 'server-only'
 import QRCode from 'qrcode'
 import { sendEmail } from '@/lib/email'
 import { formatUsd } from '@/lib/money'
-import { site } from '@/lib/site'
+import { getSiteSettings } from '@/lib/site-settings'
 import { orderScanUrl, type Order } from '@/lib/shop'
 
 /**
@@ -22,6 +22,7 @@ function escapeHtml(value: string): string {
 }
 
 export async function sendOrderConfirmationEmail(order: Order): Promise<boolean> {
+  const settings = await getSiteSettings()
   const scanUrl = orderScanUrl(order.id)
   const qrPng = await QRCode.toBuffer(scanUrl, { errorCorrectionLevel: 'M', width: 600, margin: 2 })
   // Greet by first name; orders that predate name capture get the generic line.
@@ -48,7 +49,7 @@ export async function sendOrderConfirmationEmail(order: Order): Promise<boolean>
       </h1>
       <p style="font-size: 15px; line-height: 1.6; margin: 0 0 16px;">
         ${greeting} — your payment was received. Your order will be ready for pickup at
-        <strong>Sunday service, ${site.address.street}, ${site.address.city}</strong>.
+        <strong>Sunday service, ${settings.address.street}, ${settings.address.city}</strong>.
       </p>
       <table style="border-collapse: collapse; margin: 0 0 8px;">
         ${itemRows}

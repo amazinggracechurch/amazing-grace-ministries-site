@@ -1,6 +1,7 @@
 import 'server-only'
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from 'pdf-lib'
 import { site } from '@/lib/site'
+import { getSiteSettings } from '@/lib/site-settings'
 import type { MemberDonation } from '@/lib/account/member'
 import { chicagoDateKey } from '@/lib/admin/giving'
 
@@ -10,7 +11,9 @@ import { chicagoDateKey } from '@/lib/admin/giving'
  * Helvetica fonts so there are no font assets to load.
  *
  * The EIN and 501(c)(3) status come from lib/site.ts (confirmed by the
- * church). The IRS-required "no goods or services" sentence is mandatory.
+ * church). Address/contact come from the settings/site document via
+ * lib/site-settings.ts. The IRS-required "no goods or services" sentence
+ * is mandatory.
  */
 
 const PAGE_WIDTH = 612 // US Letter, points
@@ -64,6 +67,7 @@ export type StatementInput = {
 }
 
 export async function buildGivingStatementPdf(input: StatementInput): Promise<Uint8Array> {
+  const settings = await getSiteSettings()
   const doc = await PDFDocument.create()
   const bold = await doc.embedFont(StandardFonts.HelveticaBold)
   const regular = await doc.embedFont(StandardFonts.Helvetica)
@@ -86,9 +90,9 @@ export async function buildGivingStatementPdf(input: StatementInput): Promise<Ui
 
   // --- letterhead ---
   line(site.name, { font: bold, size: 16, gap: 22 })
-  line(site.address.street, { color: MUTED })
-  line(`${site.address.city}, ${site.address.state} ${site.address.zip}`, { color: MUTED })
-  line(site.contact.email, { color: MUTED })
+  line(settings.address.street, { color: MUTED })
+  line(`${settings.address.city}, ${settings.address.state} ${settings.address.zip}`, { color: MUTED })
+  line(settings.contact.email, { color: MUTED })
   line(`EIN: ${site.ein}`, { color: MUTED })
   line(`Amazing Grace Ministries MN is ${site.taxStatus}.`, { color: MUTED, gap: 28 })
 

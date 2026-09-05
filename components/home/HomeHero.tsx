@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Play } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/ui/Reveal'
+import type { SiteSettings } from '@/lib/admin/site-settings'
 import { site } from '@/lib/site'
 import { cn } from '@/lib/cn'
 
@@ -25,13 +26,18 @@ const slides = [
 
 const INTERVAL_MS = 6500
 
+type HomeHeroProps = {
+  address: SiteSettings['address']
+  youtubeUrl: string
+}
+
 /**
  * Full-bleed photographic hero with a three-slide crossfade carousel.
  * The headline and CTAs stay constant — only the photography rotates.
  * Auto-advance pauses on hover/focus and is disabled entirely under
  * prefers-reduced-motion.
  */
-export default function HomeHero() {
+export default function HomeHero({ address, youtubeUrl }: HomeHeroProps) {
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
 
@@ -91,7 +97,7 @@ export default function HomeHero() {
               Plan Your Visit
             </Button>
             <Link
-              href={site.socials.youtube}
+              href={youtubeUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 border border-white/60 px-6 py-3 text-subheading font-semibold text-white transition-colors duration-200 hover:border-white hover:bg-white/10"
@@ -104,7 +110,7 @@ export default function HomeHero() {
         <Reveal delay={3}>
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4">
             <p className="text-body-sm font-semibold tracking-wide text-white/70">
-              Sundays 09:00 AM · {site.address.street}, {site.address.city}, {site.address.state}
+              Sundays 09:00 AM · {address.street}, {address.city}, {address.state}
             </p>
             <div className="flex items-center gap-2" role="tablist" aria-label="Hero photographs">
               {slides.map((slide, i) => (

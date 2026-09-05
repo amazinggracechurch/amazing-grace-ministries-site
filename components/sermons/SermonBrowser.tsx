@@ -6,7 +6,6 @@ import Button from '@/components/ui/Button'
 import EmptyState from '@/components/ui/EmptyState'
 import Input from '@/components/ui/Input'
 import Reveal from '@/components/ui/Reveal'
-import { site } from '@/lib/site'
 
 /**
  * The sermon library — live search plus series filters over a clean
@@ -78,7 +77,7 @@ const sermons = [
 
 const categories = ['All', 'Living in the Promise', 'Rooted', 'Grace Upon Grace']
 
-export default function SermonBrowser() {
+export default function SermonBrowser({ youtubeUrl }: { youtubeUrl: string }) {
   const [activeFilter, setActiveFilter] = useState<string>('All')
   const [searchQuery, setSearchQuery] = useState<string>('')
 
@@ -128,7 +127,7 @@ export default function SermonBrowser() {
           {filtered.map((sermon) => (
             <li key={sermon.id}>
               <a
-                href={site.socials.youtube}
+                href={youtubeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group grid grid-cols-1 gap-2 border-b border-border-subtle py-6 md:grid-cols-12 md:items-center md:gap-6"

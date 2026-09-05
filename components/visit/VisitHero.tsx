@@ -1,14 +1,15 @@
 import Image from 'next/image'
 import Reveal from '@/components/ui/Reveal'
-import { site } from '@/lib/site'
+import { getSiteSettings } from '@/lib/site-settings'
 
 /**
  * Full-bleed photographic hero. The headline, welcome line, and the
  * practical fact line (when + where) answer the highest-intent
  * visitor's first questions without scrolling.
  */
-export default function VisitHero() {
-  const sunday = site.services[0]
+export default async function VisitHero() {
+  const settings = await getSiteSettings()
+  const sunday = settings.services[0]
 
   return (
     <section className="relative isolate flex min-h-[80vh] items-end overflow-hidden bg-black">
@@ -40,7 +41,7 @@ export default function VisitHero() {
         </Reveal>
         <Reveal delay={2}>
           <p className="mt-10 text-body-sm font-semibold tracking-wide text-white/70">
-            {sunday.day} {sunday.time} &middot; {site.address.street}, {site.address.city}
+            {sunday.day} {sunday.time} &middot; {settings.address.street}, {settings.address.city}
           </p>
         </Reveal>
       </div>

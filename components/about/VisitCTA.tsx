@@ -1,13 +1,14 @@
 import { MapPin, Play } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/ui/Reveal'
-import { site } from '@/lib/site'
+import { getSiteSettings } from '@/lib/site-settings'
 
 /**
  * Visit invitation — a compact dark band closing the page, with a Button
  * to /plan-your-visit. Copy preserved verbatim from the original VisitCTA.
  */
-export default function VisitCTA() {
+export default async function VisitCTA() {
+  const settings = await getSiteSettings()
   return (
     <section className="dark bg-surface text-text-primary">
       <div className="mx-auto max-w-7xl px-6 py-16 md:py-20">
@@ -30,7 +31,7 @@ export default function VisitCTA() {
                 Plan Your Visit
               </Button>
               <Button
-                href={site.socials.youtube}
+                href={settings.socials.youtube}
                 variant="secondary"
                 size="lg"
                 target="_blank"
