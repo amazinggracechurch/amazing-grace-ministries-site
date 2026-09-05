@@ -33,6 +33,8 @@ export type Pledge = {
   endDate: string | null
   status: PledgeStatus
   createdAt: string
+  /** ISO instant of the last reminder email sent; absent on older docs. */
+  lastReminderAt?: string
 }
 
 export type PledgeErrorCode =
@@ -81,6 +83,9 @@ function toPledge(id: string, data: Record<string, unknown>): Pledge {
       ? (status as PledgeStatus)
       : 'active',
     createdAt: asString(data.createdAt) ?? new Date(0).toISOString(),
+    ...(asString(data.lastReminderAt)
+      ? { lastReminderAt: asString(data.lastReminderAt)! }
+      : {}),
   }
 }
 
@@ -99,6 +104,15 @@ export async function getPledgesForUser(userId: string): Promise<Pledge[]> {
   return snapshot.docs
     .map((doc) => toPledge(doc.id, doc.data()))
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+}
+
+/** Every active pledge — the pledge-reminder cron's working set. */
+export async function listActivePledges(): Promise<Pledge[]> {
+  const snapshot = await adminDb()
+    .collection('pledges')
+    .where('status', '==', 'active')
+    .get()
+  return snapshot.docs.map((doc) => toPledge(doc.id, doc.data()))
 }
 
 // --- writes ---

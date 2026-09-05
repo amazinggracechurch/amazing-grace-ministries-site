@@ -36,6 +36,10 @@ const firebaseClientSchema = z.object({
   NEXT_PUBLIC_FIREBASE_APP_ID: z.string().min(1),
 })
 
+const cronSchema = z.object({
+  CRON_SECRET: z.string().min(1, 'CRON_SECRET is required'),
+})
+
 const firebaseAdminSchema = z.object({
   FIREBASE_ADMIN_PROJECT_ID: z.string().min(1),
   FIREBASE_ADMIN_CLIENT_EMAIL: z.string().email(),
@@ -81,6 +85,7 @@ export const env = {
   },
   youtube: () => parse(youtubeSchema, 'YouTube'),
   resend: () => parse(resendSchema, 'Resend'),
+  cron: () => parse(cronSchema, 'Cron'),
   firebaseClient: () => parse(firebaseClientSchema, 'Firebase client'),
   firebaseAdmin: () => parse(firebaseAdminSchema, 'Firebase Admin'),
   siteUrl: () => process.env.NEXT_PUBLIC_SITE_URL ?? 'https://amazinggracemn.org',
@@ -93,6 +98,7 @@ export const has = {
     Boolean(process.env.STRIPE_WEBHOOK_SECRET || process.env.PROD_STRIPE_WEBHOOK_SECRET),
   youtube: () => youtubeSchema.safeParse(process.env).success,
   resend: () => resendSchema.safeParse(process.env).success,
+  cron: () => cronSchema.safeParse(process.env).success,
   firebaseClient: () => firebaseClientSchema.safeParse(process.env).success,
   firebaseAdmin: () => firebaseAdminSchema.safeParse(process.env).success,
 }
