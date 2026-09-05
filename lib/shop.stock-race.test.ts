@@ -16,7 +16,10 @@ vi.mock('server-only', () => ({}))
 
 const { adminDb } = await import('@/lib/firebase/admin')
 const { createOrderFromStripeSession, OrderStockError } = await import('@/lib/shop')
+const { has } = await import('@/lib/env')
 
+// Integration test against the real Firestore — skips when the Firebase
+// Admin env isn't present (e.g. CI without secrets).
 const RUN = `race-${Date.now()}`
 
 async function seedRaceFixture(): Promise<{ productId: string; pendingIds: string[] }> {
@@ -61,7 +64,7 @@ async function seedRaceFixture(): Promise<{ productId: string; pendingIds: strin
   return { productId: productRef.id, pendingIds }
 }
 
-describe('createOrderFromStripeSession stock race', () => {
+describe.skipIf(!has.firebaseAdmin())('createOrderFromStripeSession stock race', () => {
   it('two concurrent sessions for stock 1 — exactly one order, stock never negative', async () => {
     const { productId, pendingIds } = await seedRaceFixture()
     const db = adminDb()
