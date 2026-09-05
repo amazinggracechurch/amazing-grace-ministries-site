@@ -9,6 +9,7 @@ import {
   type IntentResponse,
 } from '@/lib/donations/shared'
 import { chargeTotalCents, feeCents } from '@/lib/money'
+import { getProjectBySlug } from '@/lib/projects'
 import { getStripe } from '@/lib/stripe'
 
 /**
@@ -31,6 +32,8 @@ const intentSchema = z.object({
   coverFee: z.boolean(),
   email: z.email('Please enter a valid email address.').optional(),
   source: z.enum(['web', 'qr']).default('web'),
+  /** Optional funding-project designation (from /give?project=<slug>). */
+  projectSlug: z.string().trim().min(1).max(200).optional(),
 })
 
 const RATE_LIMIT = 10
@@ -100,10 +103,30 @@ export async function POST(request: Request) {
     return errorResponse(message, 400)
   }
 
-  const { amountCents, fund, frequency, coverFee, email, source } = parsed.data
+  const { amountCents, fund, frequency, coverFee, email, source, projectSlug } = parsed.data
 
   if (frequency !== 'one-time' && !email) {
     return errorResponse('An email address is required for recurring gifts.', 400)
+  }
+
+  // A designated gift must name a real, currently-active project; its id —
+  // resolved here, never trusted from the client — rides in the metadata so
+  // the webhook can credit the campaign (spec §7.4).
+  let projectId: string | null = null
+  if (projectSlug) {
+    try {
+      const project = await getProjectBySlug(projectSlug)
+      if (!project || project.status !== 'active') {
+        return errorResponse('This project is not accepting gifts right now.', 400)
+      }
+      projectId = project.id
+    } catch (error) {
+      console.error('[donations] project lookup failed', {
+        projectSlug,
+        message: error instanceof Error ? error.message : 'unknown',
+      })
+      return errorResponse('Something went wrong starting your gift. Please try again.', 502)
+    }
   }
 
   // Server computes the charge total — the client's total is never trusted.
@@ -117,6 +140,7 @@ export async function POST(request: Request) {
     source,
     baseAmountCents: String(amountCents),
     feeCents: String(fee),
+    ...(projectId && projectSlug ? { projectId, projectSlug } : {}),
   }
 
   const stripe = getStripe()

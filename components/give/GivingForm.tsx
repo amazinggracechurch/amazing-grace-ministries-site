@@ -43,9 +43,19 @@ const EMAIL_PATTERN = /^\S+@\S+\.\S+$/
 
 type Phase = 'form' | 'creating' | 'payment'
 
+/** A funding project this gift is designated toward (from /give?project=<slug>). */
+export type GivingProject = {
+  slug: string
+  title: string
+  goalAmountCents: number
+  raisedAmountCents: number
+}
+
 type GivingFormProps = {
   /** Server-detected Stripe configuration; when false the form stays in its pre-launch state. */
   stripeEnabled: boolean
+  /** When present, the gift is designated toward this project and a banner says so. */
+  project?: GivingProject
 }
 
 /**
@@ -55,7 +65,7 @@ type GivingFormProps = {
  * Payment Element mounts in the same aside, so the form simply grows a
  * payment section instead of navigating away.
  */
-export default function GivingForm({ stripeEnabled }: GivingFormProps) {
+export default function GivingForm({ stripeEnabled, project }: GivingFormProps) {
   const [preset, setPreset] = useState<number | null>(50)
   const [custom, setCustom] = useState('')
   const [customTouched, setCustomTouched] = useState(false)
@@ -120,6 +130,7 @@ export default function GivingForm({ stripeEnabled }: GivingFormProps) {
           coverFee,
           email: email.trim() !== '' ? email.trim() : undefined,
           source: 'web',
+          ...(project ? { projectSlug: project.slug } : {}),
         }),
       })
       const data = (await res.json()) as IntentResponse & { error?: string }
@@ -163,6 +174,20 @@ export default function GivingForm({ stripeEnabled }: GivingFormProps) {
                 }}
                 className="flex flex-col gap-8"
               >
+                {project && (
+                  <div className="border border-accent bg-accent-subtle p-5">
+                    <p className="eyebrow text-accent">Designated gift</p>
+                    <p className="mt-2 font-display text-heading font-medium tracking-display text-text-primary">
+                      Giving toward: {project.title}
+                    </p>
+                    <p className="mt-1 text-body-sm text-text-secondary">
+                      {formatUsd(Math.max(0, project.goalAmountCents - project.raisedAmountCents))}{' '}
+                      remaining to reach the {formatUsd(project.goalAmountCents)} goal. Every gift
+                      here counts toward the campaign — and toward your pledge, if you have one.
+                    </p>
+                  </div>
+                )}
+
                 <RadioGroup
                   legend="Frequency"
                   name="frequency"

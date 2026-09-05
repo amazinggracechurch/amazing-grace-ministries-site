@@ -10,6 +10,7 @@ import EventsRail from "@/components/home/EventsRail";
 import GivingBand from "@/components/home/GivingBand";
 import Reveal from "@/components/ui/Reveal";
 import { getRecentSermons } from "@/lib/youtube";
+import { getFeaturedProject } from "@/lib/projects";
 import { site } from "@/lib/site";
 import { env } from "@/lib/env";
 
@@ -47,6 +48,9 @@ const churchJsonLd = {
 
 export default async function Home() {
   const sermons = await getRecentSermons(4);
+  // Featured campaign for the giving band — Firestore trouble must never
+  // take the home page down, so a failure simply renders the generic band.
+  const featuredProject = await getFeaturedProject().catch(() => null);
   return (
     <main className="flex min-h-screen flex-col bg-surface font-body text-text-primary antialiased">
       <script
@@ -69,7 +73,7 @@ export default async function Home() {
         </Reveal>
       </section>
       <EventsRail />
-      <GivingBand />
+      <GivingBand project={featuredProject} />
       <Footer />
     </main>
   );

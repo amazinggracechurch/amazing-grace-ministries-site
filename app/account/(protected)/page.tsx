@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { HandHeart, CalendarCheck, UserRound } from 'lucide-react'
 import Navbar from '@/components/Navbar'
@@ -18,11 +19,6 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic'
 
 const COMING_SOON = [
-  {
-    icon: HandHeart,
-    title: 'Giving History',
-    body: 'Every gift, receipt, and your annual statement.',
-  },
   {
     icon: CalendarCheck,
     title: 'My RSVPs',
@@ -96,6 +92,22 @@ export default async function AccountPage() {
           </div>
 
           <div className="mt-16 grid gap-6 md:grid-cols-3">
+            <Link href="/account/pledges" className="group block">
+              <Card className="flex h-full flex-col gap-3 transition-colors duration-200 group-hover:border-accent">
+                <div className="flex items-center justify-between">
+                  <span className="flex size-10 items-center justify-center bg-accent-subtle text-accent">
+                    <HandHeart className="size-5" aria-hidden />
+                  </span>
+                  <Badge variant="accent">New</Badge>
+                </div>
+                <h2 className="font-display text-heading tracking-display text-text-primary transition-colors duration-200 group-hover:text-accent">
+                  My Pledges
+                </h2>
+                <p className="text-body-sm text-text-secondary">
+                  Promises you have made to ministry projects — track and fulfill them here.
+                </p>
+              </Card>
+            </Link>
             {COMING_SOON.map((item) => (
               <Card key={item.title} className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">

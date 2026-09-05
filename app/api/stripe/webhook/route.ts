@@ -4,14 +4,20 @@ import { getDonationStore, type DonationRecord } from '@/lib/donations/store'
 import { getStripe } from '@/lib/stripe'
 import { createRsvp } from '@/lib/events'
 import { rsvpManageUrl, sendRsvpConfirmationEmail } from '@/lib/rsvp-email'
+import { adminAuth } from '@/lib/firebase/admin'
+import { incrementProjectProgress } from '@/lib/projects'
+import { applyGiftToPledge, applyGiftToPledgeById } from '@/lib/pledges'
 
 /**
  * Stripe webhook receiver. POST only.
  *
- * - Verifies the signature against the RAW body (`await request.text()`).
- * - Idempotent via the donation store's processed-event set.
- * - Persistence goes through lib/donations/store.ts only — Phase 2 swaps the
- *   in-memory implementation for Firestore without touching this file.
+ * - Verifies the signature against the RAW body (`await request.text()`),
+ *   trying every configured signing secret (test endpoint, prod endpoint
+ *   carried over from the previous site, local stripe listen).
+ * - Idempotent via the donation store's processed-event set (Firestore
+ *   stripe_events/{eventId}).
+ * - Donations are recorded in Firestore ONLY here; project progress and
+ *   pledge fulfillment are credited transactionally on success events.
  * - Unknown event types are acknowledged with 200 and a logged note, so
  *   Stripe doesn't retry them forever.
  */
@@ -87,6 +93,44 @@ export async function POST(request: Request) {
             paymentIntentId: pi.id,
           })
         )
+        // Funding-project credit (spec §7.4): the donation is already
+        // recorded, so everything below is best-effort — it logs and never
+        // fails the webhook.
+        if (pi.metadata?.projectId) {
+          try {
+            const baseCents = pi.metadata.baseAmountCents
+              ? Number(pi.metadata.baseAmountCents)
+              : pi.amount
+            const projectId = pi.metadata.projectId
+            const donorEmail = pi.metadata.donorEmail || null
+            await incrementProjectProgress(projectId, baseCents, donorEmail)
+            if (donorEmail) {
+              if (pi.metadata.pledgeId) {
+                // The gift named its pledge outright — apply directly.
+                await applyGiftToPledgeById(pi.metadata.pledgeId, baseCents)
+              } else {
+                // Match the donor email to a signed-in member and apply the
+                // gift to their open pledge on this project, if one exists.
+                const authUser = await adminAuth()
+                  .getUserByEmail(donorEmail)
+                  .catch(() => null)
+                if (authUser) {
+                  await applyGiftToPledge({
+                    userId: authUser.uid,
+                    projectId,
+                    amountCents: baseCents,
+                  })
+                }
+              }
+            }
+          } catch (error) {
+            console.error('[stripe webhook] project credit failed', {
+              paymentIntentId: pi.id,
+              projectId: pi.metadata.projectId,
+              message: error instanceof Error ? error.message : 'unknown',
+            })
+          }
+        }
         break
       }
 
@@ -123,15 +167,43 @@ export async function POST(request: Request) {
           typeof subscriptionDetails?.subscription === 'string'
             ? subscriptionDetails.subscription
             : null
+        const metadata = subscriptionDetails?.metadata ?? invoice.metadata
         await store.recordDonation(
-          donationFromMetadata(
-            event.id,
-            'succeeded',
-            invoice.amount_paid,
-            subscriptionDetails?.metadata ?? invoice.metadata,
-            { subscriptionId }
-          )
+          donationFromMetadata(event.id, 'succeeded', invoice.amount_paid, metadata, {
+            subscriptionId,
+          })
         )
+        // Recurring project gifts: subscription metadata carries projectId
+        // (the invoice's own PaymentIntent does not), so project credit for
+        // recurring gifts happens here, never in payment_intent.succeeded —
+        // which also means no double-counting of the first invoice.
+        if (metadata?.projectId) {
+          try {
+            const baseCents = metadata.baseAmountCents
+              ? Number(metadata.baseAmountCents)
+              : invoice.amount_paid
+            const donorEmail = metadata.donorEmail || null
+            await incrementProjectProgress(metadata.projectId, baseCents, donorEmail)
+            if (donorEmail) {
+              const authUser = await adminAuth()
+                .getUserByEmail(donorEmail)
+                .catch(() => null)
+              if (authUser) {
+                await applyGiftToPledge({
+                  userId: authUser.uid,
+                  projectId: metadata.projectId,
+                  amountCents: baseCents,
+                })
+              }
+            }
+          } catch (error) {
+            console.error('[stripe webhook] recurring project credit failed', {
+              subscriptionId,
+              projectId: metadata.projectId,
+              message: error instanceof Error ? error.message : 'unknown',
+            })
+          }
+        }
         break
       }
 
