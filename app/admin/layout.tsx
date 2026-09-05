@@ -83,6 +83,7 @@ const adminSections = [
   { label: 'Members', href: '/admin/members' },
   { label: 'Projects', href: '/admin/projects' },
   { label: 'Events', href: '/admin/events' },
+  { label: 'Shop', href: '/admin/shop' },
   { label: 'Blog', href: '/admin/blog' },
   { label: 'Sermons', href: '/admin/sermons' },
   { label: 'QR Generator', href: '/admin/qr' },

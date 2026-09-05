@@ -9,6 +9,7 @@ const quickLinks = [
   { label: 'Sermons', href: '/sermons' },
   { label: 'Blog', href: '/blog' },
   { label: 'Events', href: '/events' },
+  { label: 'Shop', href: '/shop' },
   { label: 'Give', href: '/give' },
   { label: 'Contact Us', href: '/contact' },
 ]

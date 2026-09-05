@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import AuthMenu from './auth/AuthMenu'
+import CartNavButton from './shop/CartNavButton'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -12,6 +13,7 @@ const navLinks = [
   { label: 'Sermons', href: '/sermons' },
   { label: 'Blog', href: '/blog' },
   { label: 'Events', href: '/events' },
+  { label: 'Shop', href: '/shop' },
   { label: 'Give', href: '/give' },
   { label: 'Contact', href: '/contact' },
 ]
@@ -83,6 +85,7 @@ export default function Navbar() {
           </ul>
 
           <div className="flex items-center gap-5">
+            <CartNavButton />
             <AuthMenu />
             <ThemeToggle />
             <Link
@@ -96,6 +99,7 @@ export default function Navbar() {
 
         {/* Mobile menu trigger */}
         <div className="flex items-center gap-4 lg:hidden">
+          <CartNavButton />
           <ThemeToggle />
           <button
             type="button"

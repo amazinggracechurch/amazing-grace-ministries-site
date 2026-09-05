@@ -7,6 +7,8 @@ import { rsvpManageUrl, sendRsvpConfirmationEmail } from '@/lib/rsvp-email'
 import { adminAuth } from '@/lib/firebase/admin'
 import { incrementProjectProgress } from '@/lib/projects'
 import { applyGiftToPledge, applyGiftToPledgeById } from '@/lib/pledges'
+import { createOrderFromStripeSession } from '@/lib/shop'
+import { sendOrderConfirmationEmail } from '@/lib/shop-email'
 
 /**
  * Stripe webhook receiver. POST only.
@@ -219,10 +221,40 @@ export async function POST(request: Request) {
 
       // Ticketed event RSVPs (spec §6.5): /api/rsvps/checkout creates the
       // Checkout Session; the RSVP is written ONLY here, on completed payment.
-      // Idempotent via the same stripe_events processed-event guard above.
+      // Merch orders (spec §8): /api/shop/checkout stashes the cart in
+      // pending_orders; the order + stock decrement happen ONLY here, in a
+      // single Firestore transaction. Both are idempotent via the same
+      // stripe_events processed-event guard above.
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         const metadata = session.metadata ?? {}
+
+        if (metadata.type === 'merch') {
+          if (!metadata.pendingOrderId) {
+            console.error('[stripe webhook] merch session missing pendingOrderId', {
+              sessionId: session.id,
+            })
+            break
+          }
+          try {
+            const order = await createOrderFromStripeSession(session)
+            await sendOrderConfirmationEmail(order)
+          } catch (error) {
+            // Payment succeeded but the order could not be created (most
+            // likely stock ran out between checkout and payment). This needs
+            // a manual refund — make it impossible to miss in the logs, and
+            // rethrow so Stripe keeps retrying (safe: the transaction is
+            // idempotent and stock checks re-run each attempt).
+            console.error('[stripe webhook] CRITICAL merch order creation failed — payment without inventory, manual refund path', {
+              sessionId: session.id,
+              pendingOrderId: metadata.pendingOrderId,
+              message: error instanceof Error ? error.message : 'unknown',
+            })
+            throw error
+          }
+          break
+        }
+
         if (metadata.type !== 'rsvp') {
           console.info('[stripe webhook] checkout.session.completed without rsvp metadata, acknowledging')
           break

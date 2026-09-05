@@ -15,6 +15,7 @@ const ITEMS = [
   { href: '/account/recurring', label: 'Recurring' },
   { href: '/account/pledges', label: 'My Pledges' },
   { href: '/account/rsvps', label: 'My RSVPs' },
+  { href: '/account/orders', label: 'Orders' },
   { href: '/account/profile', label: 'Profile' },
 ] as const
 
