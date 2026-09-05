@@ -2,6 +2,8 @@ import type Stripe from 'stripe'
 import { env, has } from '@/lib/env'
 import { getDonationStore, type DonationRecord } from '@/lib/donations/store'
 import { getStripe } from '@/lib/stripe'
+import { createRsvp } from '@/lib/events'
+import { rsvpManageUrl, sendRsvpConfirmationEmail } from '@/lib/rsvp-email'
 
 /**
  * Stripe webhook receiver. POST only.
@@ -137,6 +139,35 @@ export async function POST(request: Request) {
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription
         await store.updateSubscriptionStatus(subscription.id, subscription.status)
+        break
+      }
+
+      // Ticketed event RSVPs (spec §6.5): /api/rsvps/checkout creates the
+      // Checkout Session; the RSVP is written ONLY here, on completed payment.
+      // Idempotent via the same stripe_events processed-event guard above.
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session
+        const metadata = session.metadata ?? {}
+        if (metadata.type !== 'rsvp') {
+          console.info('[stripe webhook] checkout.session.completed without rsvp metadata, acknowledging')
+          break
+        }
+        const partySize = Number(metadata.partySize)
+        if (!metadata.eventId || !metadata.name || !metadata.email || !Number.isInteger(partySize) || partySize < 1) {
+          console.error('[stripe webhook] rsvp session missing metadata', { sessionId: session.id })
+          break
+        }
+        // createRsvp re-checks capacity in a transaction — a payment that
+        // completes after sell-out lands on the waitlist instead of overselling.
+        const { rsvp, event: rsvpEvent } = await createRsvp({
+          eventId: metadata.eventId,
+          name: metadata.name,
+          email: metadata.email,
+          phone: metadata.phone || null,
+          partySize,
+        })
+        const manageUrl = rsvpManageUrl(rsvp.id, rsvp.manageToken)
+        await sendRsvpConfirmationEmail({ rsvp, event: rsvpEvent, manageUrl })
         break
       }
 
