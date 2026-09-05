@@ -1,0 +1,84 @@
+rules_version = '2';
+
+// Deny-by-default. Every privileged write (donations, orders, rsvps,
+// users, audit log, caches) happens server-side via the Admin SDK,
+// which bypasses these rules. Admin client writes are allowed only
+// where the build spec explicitly requires them, gated on the
+// `role` custom claim — never a Firestore field.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return signedIn() && request.auth.token.role in ['admin', 'superadmin'];
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if false; // Admin SDK only
+    }
+
+    match /donations/{id} {
+      allow read, write: if false; // Stripe webhook only
+    }
+
+    match /pledges/{id} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /projects/{id} {
+      allow read: if resource.data.status != 'draft' || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /events/{id} {
+      allow read: if resource.data.status != 'draft' || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /rsvps/{id} {
+      allow read, write: if false; // server only; manage via signed tokens
+    }
+
+    match /posts/{id} {
+      allow read: if (resource.data.status == 'published'
+                      && resource.data.publishAt <= request.time) || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /products/{id} {
+      allow read: if resource.data.status == 'active' || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /orders/{id} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /stripe_events/{id} {
+      allow read, write: if false;
+    }
+
+    match /audit_log/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /settings/{id} {
+      allow read: if true; // public site settings: times, address, socials
+      allow write: if isAdmin();
+    }
+
+    match /youtube_cache/{id} {
+      allow read, write: if false;
+    }
+  }
+}

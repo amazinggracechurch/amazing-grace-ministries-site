@@ -1,13 +1,23 @@
 /**
  * Donation persistence boundary for the Stripe webhook.
  *
- * Phase 1 ships an in-memory implementation so the webhook contract is real
- * and testable today. Phase 2 swaps in Firestore by implementing the same
- * `DonationStore` interface — the webhook route will not change. Every
- * method is async from day one so the swap is mechanical.
+ * The webhook route only talks to the `DonationStore` interface. The
+ * Firestore implementation is used whenever the Admin SDK is configured;
+ * otherwise an in-memory fallback keeps local development possible and
+ * warns loudly on boot. Every method is async so the swap is invisible
+ * to the webhook.
+ *
+ * Firestore layout (see AGM_BUILD_PROMPT.md §9):
+ *   donations/{autoId}        — written ONLY by the webhook
+ *   stripe_events/{eventId}   — idempotency guard; existence = processed
  *
  * Amounts are integer cents everywhere.
  */
+
+import 'server-only'
+import { adminDb } from '@/lib/firebase/admin'
+import { has } from '@/lib/env'
+import { FieldValue } from 'firebase-admin/firestore'
 
 export type DonationRecord = {
   /** Stripe event id that produced this record (idempotency anchor). */
@@ -36,6 +46,42 @@ export interface DonationStore {
   updateSubscriptionStatus(subscriptionId: string, status: string): Promise<void>
 }
 
+class FirestoreDonationStore implements DonationStore {
+  async hasProcessed(eventId: string): Promise<boolean> {
+    const doc = await adminDb().collection('stripe_events').doc(eventId).get()
+    return doc.exists
+  }
+
+  async recordDonation(donation: DonationRecord): Promise<void> {
+    await adminDb()
+      .collection('donations')
+      .add({ ...donation, recordedAt: FieldValue.serverTimestamp() })
+  }
+
+  async markEventProcessed(eventId: string): Promise<void> {
+    await adminDb()
+      .collection('stripe_events')
+      .doc(eventId)
+      .set({ processedAt: FieldValue.serverTimestamp() })
+  }
+
+  async updateSubscriptionStatus(subscriptionId: string, status: string): Promise<void> {
+    await adminDb()
+      .collection('donations')
+      .where('subscriptionId', '==', subscriptionId)
+      .where('frequency', '!=', 'one-time')
+      .limit(1)
+      .get()
+      .then(async (snapshot) => {
+        if (snapshot.empty) return
+        await snapshot.docs[0]!.ref.update({
+          subscriptionStatus: status,
+          updatedAt: FieldValue.serverTimestamp(),
+        })
+      })
+  }
+}
+
 class InMemoryDonationStore implements DonationStore {
   private processedEvents = new Set<string>()
   private donations: DonationRecord[] = []
@@ -47,7 +93,7 @@ class InMemoryDonationStore implements DonationStore {
 
   async recordDonation(donation: DonationRecord): Promise<void> {
     this.donations.push(donation)
-    console.info('[donations] recorded', {
+    console.info('[donations] recorded (in-memory)', {
       paymentIntentId: donation.paymentIntentId,
       subscriptionId: donation.subscriptionId,
       amountCents: donation.amountCents,
@@ -62,7 +108,7 @@ class InMemoryDonationStore implements DonationStore {
 
   async updateSubscriptionStatus(subscriptionId: string, status: string): Promise<void> {
     this.subscriptions.set(subscriptionId, status)
-    console.info('[donations] subscription status', { subscriptionId, status })
+    console.info('[donations] subscription status (in-memory)', { subscriptionId, status })
   }
 }
 
@@ -70,11 +116,15 @@ const globalStore = globalThis as typeof globalThis & { __agmDonationStore?: Don
 
 export function getDonationStore(): DonationStore {
   if (!globalStore.__agmDonationStore) {
-    console.warn(
-      'WARNING: donation store is in-memory — Firebase lands in Phase 2. ' +
-        'Donations and processed-event ids are lost on restart.'
-    )
-    globalStore.__agmDonationStore = new InMemoryDonationStore()
+    if (has.firebaseAdmin()) {
+      globalStore.__agmDonationStore = new FirestoreDonationStore()
+    } else {
+      console.warn(
+        'WARNING: Firebase Admin not configured — donation store is in-memory. ' +
+          'Donations and processed-event ids are lost on restart.'
+      )
+      globalStore.__agmDonationStore = new InMemoryDonationStore()
+    }
   }
   return globalStore.__agmDonationStore
 }

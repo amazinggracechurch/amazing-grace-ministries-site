@@ -1,7 +1,6 @@
 // SERVER-ONLY MODULE — holds the Stripe secret key. Never import this from
-// a client component. (The `server-only` package is not installed in this
-// repo; this comment is the guard. All imports of this module live under
-// app/api/ and app/give/ server components.)
+// a client component; the `server-only` package makes that a build error.
+import 'server-only'
 import Stripe from 'stripe'
 import { env } from './env'
 

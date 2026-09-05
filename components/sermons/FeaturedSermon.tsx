@@ -5,7 +5,7 @@ import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/ui/Reveal'
 import SermonPlayer from '@/components/sermons/SermonPlayer'
-import { formatAirDate, formatDuration, type Sermon } from '@/lib/youtube'
+import { formatAirDate, formatDuration, type Sermon } from '@/lib/sermons'
 
 type FeaturedSermonProps = {
   sermon?: Sermon

@@ -1,0 +1,19 @@
+rules_version = '2';
+
+// Public reads (flyers, blog images, product photos are public content).
+// Writes are admin-only (custom claim), images only, capped at 10 MB.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAdmin() {
+      return request.auth != null && request.auth.token.role in ['admin', 'superadmin'];
+    }
+
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}

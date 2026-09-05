@@ -7,7 +7,7 @@ import Section from '@/components/layout/Section'
 import ScrollRail from '@/components/layout/ScrollRail'
 import Reveal from '@/components/ui/Reveal'
 import SermonPlayer from '@/components/sermons/SermonPlayer'
-import { formatAirDate, type Sermon } from '@/lib/youtube'
+import { formatAirDate, type Sermon } from '@/lib/sermons'
 import { cn } from '@/lib/cn'
 
 type SermonHighlightProps = {

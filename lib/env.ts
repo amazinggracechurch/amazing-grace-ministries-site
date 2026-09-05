@@ -27,6 +27,26 @@ const resendSchema = z.object({
   CONTACT_INBOX: z.string().min(1, 'CONTACT_INBOX is required'),
 })
 
+const firebaseClientSchema = z.object({
+  NEXT_PUBLIC_FIREBASE_API_KEY: z.string().min(1),
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: z.string().min(1),
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string().min(1),
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: z.string().min(1),
+  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: z.string().min(1),
+  NEXT_PUBLIC_FIREBASE_APP_ID: z.string().min(1),
+})
+
+const firebaseAdminSchema = z.object({
+  FIREBASE_ADMIN_PROJECT_ID: z.string().min(1),
+  FIREBASE_ADMIN_CLIENT_EMAIL: z.string().email(),
+  FIREBASE_ADMIN_PRIVATE_KEY: z
+    .string()
+    .includes('BEGIN PRIVATE KEY', {
+      message:
+        'FIREBASE_ADMIN_PRIVATE_KEY must be the private_key PEM from the service-account JSON (not private_key_id)',
+    }),
+})
+
 function parse<T>(schema: z.ZodType<T>, domain: string): T {
   const result = schema.safeParse(process.env)
   if (!result.success) {
@@ -61,6 +81,8 @@ export const env = {
   },
   youtube: () => parse(youtubeSchema, 'YouTube'),
   resend: () => parse(resendSchema, 'Resend'),
+  firebaseClient: () => parse(firebaseClientSchema, 'Firebase client'),
+  firebaseAdmin: () => parse(firebaseAdminSchema, 'Firebase Admin'),
   siteUrl: () => process.env.NEXT_PUBLIC_SITE_URL ?? 'https://amazinggracemn.org',
 }
 
@@ -71,4 +93,6 @@ export const has = {
     Boolean(process.env.STRIPE_WEBHOOK_SECRET || process.env.PROD_STRIPE_WEBHOOK_SECRET),
   youtube: () => youtubeSchema.safeParse(process.env).success,
   resend: () => resendSchema.safeParse(process.env).success,
+  firebaseClient: () => firebaseClientSchema.safeParse(process.env).success,
+  firebaseAdmin: () => firebaseAdminSchema.safeParse(process.env).success,
 }

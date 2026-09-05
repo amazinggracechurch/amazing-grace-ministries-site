@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import { useState, type ReactNode } from 'react'
 import { Play } from 'lucide-react'
-import type { Sermon } from '@/lib/youtube'
+import type { Sermon } from '@/lib/sermons'
 
 type SermonPlayerProps = {
   sermon: Sermon

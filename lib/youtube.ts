@@ -1,4 +1,8 @@
+import 'server-only'
 import { env, has } from '@/lib/env'
+import { adminDb } from '@/lib/firebase/admin'
+import { FieldValue } from 'firebase-admin/firestore'
+import type { Sermon } from '@/lib/sermons'
 
 /**
  * YouTube Data API v3 — server-side data layer for recent services.
@@ -7,29 +11,42 @@ import { env, has } from '@/lib/env'
  * UC… → UU…), then batch-fetches video details for durations. Results
  * are cached for one hour via `next: { revalidate: 3600 }`.
  *
- * Graceful degradation: missing credentials or any API failure returns
- * FALLBACK_SERMONS (never throws), and components render nothing when
- * the result is empty.
+ * Graceful degradation: every successful fetch is written through to
+ * Firestore (`youtube_cache/latest`); when credentials are missing or
+ * the API fails, the last-good Firestore snapshot is served instead.
+ * Never throws; components render nothing when the result is empty.
+ *
+ * Types and display helpers live in lib/sermons.ts (client-safe).
  */
-
-export type Sermon = {
-  id: string
-  title: string
-  publishedAt: string
-  durationSeconds: number | null
-  thumbnail: string
-  url: string
-}
-
-/**
- * Last-good cache. Ships empty for now — components hide themselves
- * when this is all we have. Phase 2: becomes the Firestore
- * `youtube_cache/latest` document, refreshed on each successful fetch.
- */
-export const FALLBACK_SERMONS: Sermon[] = []
 
 const API_BASE = 'https://www.googleapis.com/youtube/v3'
 const REVALIDATE_SECONDS = 3600
+const CACHE_DOC = 'youtube_cache/latest'
+
+/** Persist the last good result so an API outage degrades gracefully. */
+async function writeCache(sermons: Sermon[]): Promise<void> {
+  if (!has.firebaseAdmin() || sermons.length === 0) return
+  try {
+    await adminDb()
+      .doc(CACHE_DOC)
+      .set({ sermons, updatedAt: FieldValue.serverTimestamp() })
+  } catch {
+    console.warn('[youtube] failed to write Firestore cache')
+  }
+}
+
+/** The last good result, or empty when nothing has ever been cached. */
+async function readCache(): Promise<Sermon[]> {
+  if (!has.firebaseAdmin()) return []
+  try {
+    const doc = await adminDb().doc(CACHE_DOC).get()
+    if (!doc.exists) return []
+    const sermons = doc.get('sermons')
+    return Array.isArray(sermons) ? (sermons as Sermon[]) : []
+  } catch {
+    return []
+  }
+}
 
 type YouTubeThumbnail = { url: string; width?: number; height?: number }
 
@@ -127,16 +144,18 @@ function manualVideoIds(): string[] {
 /**
  * The most recent services from the church's YouTube channel.
  * Manual IDs (YOUTUBE_MANUAL_VIDEO_IDS) take precedence over the
- * uploads playlist. Never throws — returns FALLBACK_SERMONS when
- * YouTube is unconfigured or unreachable.
+ * uploads playlist. Never throws — on any failure, serves the last-good
+ * Firestore snapshot (empty until the first successful fetch).
  */
 export async function getRecentSermons(count = 4): Promise<Sermon[]> {
-  if (!has.youtube()) return FALLBACK_SERMONS
+  if (!has.youtube()) return readCache()
 
   try {
     const manual = manualVideoIds()
     if (manual.length > 0) {
-      return await fetchVideos(manual.slice(0, count))
+      const sermons = await fetchVideos(manual.slice(0, count))
+      await writeCache(sermons)
+      return sermons
     }
 
     const { YOUTUBE_CHANNEL_ID } = env.youtube()
@@ -150,32 +169,10 @@ export async function getRecentSermons(count = 4): Promise<Sermon[]> {
     const ids = (playlist.items ?? [])
       .map((item) => item.snippet?.resourceId?.videoId)
       .filter((id): id is string => Boolean(id))
-    return await fetchVideos(ids)
+    const sermons = await fetchVideos(ids)
+    await writeCache(sermons)
+    return sermons
   } catch {
-    return FALLBACK_SERMONS
+    return readCache()
   }
-}
-
-/** 4523 → "1:15:23", 612 → "10:12". Null when the duration is unknown. */
-export function formatDuration(seconds: number | null): string | null {
-  if (seconds === null || !Number.isFinite(seconds)) return null
-  const total = Math.max(0, Math.round(seconds))
-  const h = Math.floor(total / 3600)
-  const m = Math.floor((total % 3600) / 60)
-  const s = total % 60
-  const ss = String(s).padStart(2, '0')
-  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${ss}`
-  return `${m}:${ss}`
-}
-
-/** ISO timestamp → "Aug 24, 2025" (UTC, so the date never shifts by timezone). */
-export function formatAirDate(iso: string): string {
-  const date = new Date(iso)
-  if (Number.isNaN(date.getTime())) return ''
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).format(date)
 }

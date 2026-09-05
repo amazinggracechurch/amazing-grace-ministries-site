@@ -24,7 +24,19 @@ Other scripts:
 ```bash
 npm run build      # production build
 npm run lint       # eslint
+npx vitest run     # unit tests (money math, etc.)
+# Firestore security-rules tests (needs a Java runtime, e.g. temurin):
+FIRESTORE_EMULATOR_TESTS=1 npx vitest run tests/firestore.rules.test.ts
 node scripts/screenshot.mjs <url> <out.png> [light|dark] [w] [h] [fullpage]  # design review helper
+```
+
+### Deploying Firestore/Storage rules
+
+`firestore.rules`, `storage.rules`, and `firestore.indexes.json` live in the repo root.
+Deploy them with the Firebase CLI (`npm i -g firebase-tools`, then `firebase login`):
+
+```bash
+firebase deploy --only firestore:rules,firestore:indexes,storage --project agm-website-proj
 ```
 
 ## Design system

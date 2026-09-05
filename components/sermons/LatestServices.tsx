@@ -8,7 +8,7 @@ import SectionHeading from '@/components/layout/SectionHeading'
 import Badge from '@/components/ui/Badge'
 import Reveal from '@/components/ui/Reveal'
 import SermonPlayer from '@/components/sermons/SermonPlayer'
-import { formatAirDate, formatDuration, type Sermon } from '@/lib/youtube'
+import { formatAirDate, formatDuration, type Sermon } from '@/lib/sermons'
 import { site } from '@/lib/site'
 import { cn } from '@/lib/cn'
 
