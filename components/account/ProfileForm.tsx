@@ -6,10 +6,13 @@ import Button from '@/components/ui/Button'
 import Checkbox from '@/components/ui/Checkbox'
 import Input from '@/components/ui/Input'
 import Spinner from '@/components/ui/Spinner'
+import { INTEREST_GROUPS } from '@/lib/member-groups'
 
 export type ProfileFormValues = {
   displayName: string
   phone: string
+  birthdate: string
+  interests: string[]
   emailUpdates: boolean
   pledgeReminders: boolean
 }
@@ -40,6 +43,8 @@ export default function ProfileForm({ initial }: { initial: ProfileFormValues })
         body: JSON.stringify({
           displayName: values.displayName,
           phone: values.phone,
+          birthdate: values.birthdate,
+          interests: values.interests,
           communicationPrefs: {
             emailUpdates: values.emailUpdates,
             pledgeReminders: values.pledgeReminders,
@@ -86,6 +91,45 @@ export default function ProfileForm({ initial }: { initial: ProfileFormValues })
         autoComplete="tel"
         hint="Optional — only used if the church office needs to reach you."
       />
+      <Input
+        label="Birthdate"
+        name="birthdate"
+        type="date"
+        value={values.birthdate}
+        onChange={(event) => {
+          setValues((v) => ({ ...v, birthdate: event.target.value }))
+          setSaved(false)
+        }}
+        autoComplete="bday"
+        hint="Optional — so we can celebrate with you."
+      />
+
+      <fieldset className="flex flex-col gap-4">
+        <legend className="text-body-sm font-semibold text-text-primary">
+          I&apos;m interested in
+        </legend>
+        <p className="-mt-2 text-caption text-text-muted">
+          Helps us share what matters to you — group news, serving opportunities, and events.
+        </p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {INTEREST_GROUPS.map((group) => (
+            <Checkbox
+              key={group}
+              label={group}
+              checked={values.interests.includes(group)}
+              onChange={(event) => {
+                setValues((v) => ({
+                  ...v,
+                  interests: event.target.checked
+                    ? [...v.interests, group]
+                    : v.interests.filter((i) => i !== group),
+                }))
+                setSaved(false)
+              }}
+            />
+          ))}
+        </div>
+      </fieldset>
 
       <fieldset className="flex flex-col gap-4">
         <legend className="text-body-sm font-semibold text-text-primary">

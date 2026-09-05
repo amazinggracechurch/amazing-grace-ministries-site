@@ -137,6 +137,7 @@ export default async function AdminMembersPage({
               <thead>
                 <tr className="border-b border-border-strong text-caption font-semibold uppercase tracking-eyebrow text-text-muted">
                   <th scope="col" className="py-3 pr-4 font-semibold">Member</th>
+                  <th scope="col" className="py-3 pr-4 font-semibold">Interests</th>
                   <th scope="col" className="py-3 pr-4 font-semibold">Since</th>
                   <th scope="col" className="py-3 pr-4 font-semibold">Role</th>
                   <th scope="col" className="py-3 pr-4 font-semibold">Giving</th>
@@ -157,6 +158,22 @@ export default async function AdminMembersPage({
                           {member.displayName ?? '—'}
                         </p>
                         <p className="text-caption text-text-muted">{member.email ?? '—'}</p>
+                        {member.phone && (
+                          <p className="text-caption text-text-muted">{member.phone}</p>
+                        )}
+                      </td>
+                      <td className="py-3 pr-4">
+                        {member.interests.length > 0 ? (
+                          <div className="flex max-w-56 flex-wrap gap-1">
+                            {member.interests.map((group) => (
+                              <Badge key={group} variant="neutral">
+                                {group}
+                              </Badge>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-caption text-text-muted">—</span>
+                        )}
                       </td>
                       <td className="whitespace-nowrap py-3 pr-4 text-text-secondary">
                         {memberSince(member.createdAt)}

@@ -249,6 +249,10 @@ export type MemberProfile = {
   email: string | null
   photoURL: string | null
   stripeCustomerId: string | null
+  /** Optional ISO date (YYYY-MM-DD) for birthday care. */
+  birthdate: string | null
+  /** Ministry interest groups the member marked in their profile. */
+  interests: string[]
   communicationPrefs: CommunicationPrefs
   createdAt: Date | null
 }
@@ -270,6 +274,10 @@ export async function getMemberProfile(uid: string): Promise<MemberProfile | nul
     email: asString(data.email),
     photoURL: asString(data.photoURL),
     stripeCustomerId: asString(data.stripeCustomerId),
+    birthdate: asString(data.birthdate),
+    interests: Array.isArray(data.interests)
+      ? data.interests.filter((i): i is string => typeof i === 'string')
+      : [],
     communicationPrefs: {
       emailUpdates: prefsData.emailUpdates !== false,
       pledgeReminders: prefsData.pledgeReminders !== false,

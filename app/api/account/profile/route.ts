@@ -16,6 +16,12 @@ export const runtime = 'nodejs'
 const profileSchema = z.object({
   displayName: z.string().trim().min(1, 'Please enter your name.').max(100),
   phone: z.string().trim().max(40).default(''),
+  birthdate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Use the date picker (YYYY-MM-DD).')
+    .or(z.literal(''))
+    .default(''),
+  interests: z.array(z.string().max(60)).max(20).default([]),
   communicationPrefs: z.object({
     emailUpdates: z.boolean(),
     pledgeReminders: z.boolean(),
@@ -44,7 +50,7 @@ export async function POST(request: Request) {
     return errorResponse(parsed.error.issues[0]?.message ?? 'Invalid profile details.', 400)
   }
 
-  const { displayName, phone, communicationPrefs } = parsed.data
+  const { displayName, phone, birthdate, interests, communicationPrefs } = parsed.data
 
   try {
     await adminDb()
@@ -54,6 +60,8 @@ export async function POST(request: Request) {
         {
           displayName,
           phone: phone || null,
+          birthdate: birthdate || null,
+          interests,
           communicationPrefs,
           updatedAt: new Date().toISOString(),
         },

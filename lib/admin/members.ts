@@ -17,6 +17,11 @@ export type MemberRecord = {
   displayName: string | null
   photoURL: string | null
   role: Role
+  phone: string | null
+  /** ISO date (YYYY-MM-DD) the member optionally shares for birthday care. */
+  birthdate: string | null
+  /** Ministry interest groups the member marked in their portal profile. */
+  interests: string[]
   /** ISO string, or null when the profile predates timestamps. */
   createdAt: string | null
 }
@@ -43,6 +48,11 @@ function toMember(uid: string, data: Record<string, unknown>): MemberRecord {
     displayName: typeof data.displayName === 'string' ? data.displayName : null,
     photoURL: typeof data.photoURL === 'string' ? data.photoURL : null,
     role: ROLES.includes(role as Role) ? (role as Role) : 'member',
+    phone: typeof data.phone === 'string' ? data.phone : null,
+    birthdate: typeof data.birthdate === 'string' ? data.birthdate : null,
+    interests: Array.isArray(data.interests)
+      ? data.interests.filter((i): i is string => typeof i === 'string')
+      : [],
     createdAt: toIso(data.createdAt),
   }
 }

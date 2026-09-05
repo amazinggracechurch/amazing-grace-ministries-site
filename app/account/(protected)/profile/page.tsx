@@ -60,6 +60,8 @@ export default async function ProfilePage() {
                 initial={{
                   displayName,
                   phone: profile?.phone ?? '',
+                  birthdate: profile?.birthdate ?? '',
+                  interests: profile?.interests ?? [],
                   emailUpdates: profile?.communicationPrefs.emailUpdates ?? true,
                   pledgeReminders: profile?.communicationPrefs.pledgeReminders ?? true,
                 }}
