@@ -47,5 +47,44 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     )
   }
 
-  return children
+  return (
+    <main className="flex min-h-screen flex-col bg-surface font-body text-text-primary antialiased">
+      <Navbar />
+      <div className="mx-auto flex w-full max-w-7xl flex-1 gap-10 px-6 pt-28 pb-20">
+        <aside className="hidden w-52 shrink-0 lg:block">
+          <p className="eyebrow text-text-muted">Admin</p>
+          <nav aria-label="Admin sections" className="mt-6 flex flex-col gap-1">
+            {adminSections.map((section) => (
+              <a
+                key={section.href}
+                href={section.href}
+                className="px-3 py-2 text-body-sm font-semibold text-text-secondary transition-colors duration-200 hover:bg-surface-sunken hover:text-text-primary"
+              >
+                {section.label}
+              </a>
+            ))}
+          </nav>
+          <p className="mt-8 px-3 text-caption text-text-muted">
+            Signed in as
+            <br />
+            <span className="text-text-secondary">{user.email}</span>
+          </p>
+        </aside>
+        <div className="min-w-0 flex-1">{children}</div>
+      </div>
+      <Footer />
+    </main>
+  )
 }
+
+const adminSections = [
+  { label: 'Overview', href: '/admin' },
+  { label: 'Donations', href: '/admin/donations' },
+  { label: 'Members', href: '/admin/members' },
+  { label: 'Projects', href: '/admin/projects' },
+  { label: 'Events', href: '/admin/events' },
+  { label: 'Blog', href: '/admin/blog' },
+  { label: 'Sermons', href: '/admin/sermons' },
+  { label: 'QR Generator', href: '/admin/qr' },
+  { label: 'Site Settings', href: '/admin/settings' },
+]

@@ -133,25 +133,68 @@ async function fetchVideos(ids: string[]): Promise<Sermon[]> {
   return ids.map((id) => sermons.get(id)).filter((s): s is Sermon => Boolean(s))
 }
 
-/** Video IDs set manually via YOUTUBE_MANUAL_VIDEO_IDS (comma-separated). */
-function manualVideoIds(): string[] {
+/** Video IDs from the YOUTUBE_MANUAL_VIDEO_IDS env var (comma-separated). */
+function envManualVideoIds(): string[] {
   return (process.env.YOUTUBE_MANUAL_VIDEO_IDS ?? '')
     .split(',')
     .map((id) => id.trim())
     .filter(Boolean)
 }
 
+const MANUAL_IDS_DOC = 'settings/youtube'
+const MANUAL_IDS_TTL_MS = 5 * 60 * 1000
+
+// Stale-while-revalidate module cache for the Firestore-managed list:
+// reads within the TTL are free; the first read after expiry refetches.
+let manualIdsCache: { ids: string[]; fetchedAt: number } | null = null
+
+/** Drop the cached manual ID list (used by the admin refresh action). */
+export function clearManualVideoIdsCache(): void {
+  manualIdsCache = null
+}
+
+/**
+ * Manual override IDs. The Firestore `settings/youtube` doc (managed from
+ * /admin/sermons) wins when Firebase Admin is configured; the env var is
+ * the fallback so the site works before the doc exists or when Firestore
+ * is unreachable. Cached for 5 minutes per server instance.
+ */
+async function manualVideoIds(): Promise<string[]> {
+  if (has.firebaseAdmin()) {
+    const now = Date.now()
+    if (manualIdsCache && now - manualIdsCache.fetchedAt < MANUAL_IDS_TTL_MS) {
+      return manualIdsCache.ids
+    }
+    try {
+      const doc = await adminDb().doc(MANUAL_IDS_DOC).get()
+      const raw: unknown = doc.exists ? doc.get('manualVideoIds') : null
+      const ids = Array.isArray(raw)
+        ? raw
+            .filter((id): id is string => typeof id === 'string')
+            .map((id) => id.trim())
+            .filter(Boolean)
+        : []
+      manualIdsCache = { ids, fetchedAt: now }
+      if (ids.length > 0) return ids
+    } catch {
+      // Firestore hiccup — degrade to the env var below.
+    }
+  }
+  return envManualVideoIds()
+}
+
 /**
  * The most recent services from the church's YouTube channel.
- * Manual IDs (YOUTUBE_MANUAL_VIDEO_IDS) take precedence over the
- * uploads playlist. Never throws — on any failure, serves the last-good
+ * Manual IDs (the Firestore `settings/youtube` doc, falling back to the
+ * YOUTUBE_MANUAL_VIDEO_IDS env var) take precedence over the uploads
+ * playlist. Never throws — on any failure, serves the last-good
  * Firestore snapshot (empty until the first successful fetch).
  */
 export async function getRecentSermons(count = 4): Promise<Sermon[]> {
   if (!has.youtube()) return readCache()
 
   try {
-    const manual = manualVideoIds()
+    const manual = await manualVideoIds()
     if (manual.length > 0) {
       const sermons = await fetchVideos(manual.slice(0, count))
       await writeCache(sermons)
