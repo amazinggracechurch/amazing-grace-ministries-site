@@ -3,6 +3,7 @@ import { sendEmail } from '@/lib/email'
 import { buildIcsCalendar } from '@/lib/ics'
 import { env } from '@/lib/env'
 import { formatEventDate, formatEventTimeRange } from '@/lib/dates'
+import { splitDisplayName } from '@/lib/names'
 import type { ChurchEvent, Rsvp } from '@/lib/events'
 
 /**
@@ -32,6 +33,8 @@ export async function sendRsvpConfirmationEmail(args: {
 }): Promise<boolean> {
   const { rsvp, event, manageUrl } = args
   const waitlist = rsvp.status === 'waitlist'
+  // Greet by first name; legacy docs only carry the single-field `name`.
+  const firstName = rsvp.firstName ?? splitDisplayName(rsvp.name).firstName ?? 'there'
   const when = `${formatEventDate(event.startAt, event.timezone)} · ${formatEventTimeRange(
     event.startAt,
     event.endAt,
@@ -50,7 +53,7 @@ export async function sendRsvpConfirmationEmail(args: {
         ${waitlist ? "You're on the waitlist" : "You're on the list"}
       </h1>
       <p style="font-size: 15px; line-height: 1.6; margin: 0 0 16px;">
-        Hi ${escapeHtml(rsvp.name)}, ${
+        Hi ${escapeHtml(firstName)}, ${
           waitlist
             ? `the event is currently at capacity, so we've added your party of ${rsvp.partySize} to the waitlist for <strong>${escapeHtml(event.title)}</strong>. We'll reach out if a spot opens up.`
             : `your RSVP for <strong>${escapeHtml(event.title)}</strong> is confirmed for a party of ${rsvp.partySize}. A calendar invite is attached.`

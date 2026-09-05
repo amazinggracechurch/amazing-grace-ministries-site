@@ -15,6 +15,9 @@ export type MemberRecord = {
   uid: string
   email: string | null
   displayName: string | null
+  /** Structured name parts for reporting exports; null on legacy profiles. */
+  firstName: string | null
+  lastName: string | null
   photoURL: string | null
   role: Role
   phone: string | null
@@ -46,6 +49,8 @@ function toMember(uid: string, data: Record<string, unknown>): MemberRecord {
     uid,
     email: typeof data.email === 'string' ? data.email : null,
     displayName: typeof data.displayName === 'string' ? data.displayName : null,
+    firstName: typeof data.firstName === 'string' ? data.firstName : null,
+    lastName: typeof data.lastName === 'string' ? data.lastName : null,
     photoURL: typeof data.photoURL === 'string' ? data.photoURL : null,
     role: ROLES.includes(role as Role) ? (role as Role) : 'member',
     phone: typeof data.phone === 'string' ? data.phone : null,

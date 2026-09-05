@@ -7,13 +7,11 @@ import { adminGuard } from '@/lib/admin/guard'
  *
  * - requireAdmin first — Storage writes are privileged.
  * - Validates content-type image/* and a 10 MB ceiling.
- * - Stores at `uploads/<timestamp>-<safe-name>` and calls makePublic(), so
- *   the returned URL is the plain public object URL
- *   (https://storage.googleapis.com/<bucket>/<object>). makePublic was
- *   chosen over signed URLs: uploaded artwork is site content meant to be
- *   hot-linked by public pages forever, and a far-future signed URL still
- *   expires eventually. Bucket-level uniform access must allow public
- *   reads for these objects (see storage.rules / bucket IAM).
+ * - Stores at `uploads/<timestamp>-<safe-name>` and returns the Firebase
+ *   download URL (firebasestorage.googleapis.com/...?alt=media), which
+ *   is governed by storage.rules (public read) — NOT bucket IAM. Plain
+ *   GCS URLs can't be used: the org's domain-restriction policy blocks
+ *   allUsers IAM grants, and UBLA forbids per-object ACLs.
  */
 const MAX_BYTES = 10 * 1024 * 1024
 
@@ -60,8 +58,7 @@ export async function POST(request: Request) {
       resumable: false,
       metadata: { cacheControl: 'public, max-age=31536000, immutable' },
     })
-    await stored.makePublic()
-    const url = `https://storage.googleapis.com/${bucket.name}/${objectName}`
+    const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(objectName)}?alt=media`
 
     await recordAudit({
       actorUid: guard.user.uid,

@@ -9,7 +9,8 @@ import Spinner from '@/components/ui/Spinner'
 import { INTEREST_GROUPS } from '@/lib/member-groups'
 
 export type ProfileFormValues = {
-  displayName: string
+  firstName: string
+  lastName: string
   phone: string
   birthdate: string
   interests: string[]
@@ -29,19 +30,26 @@ export default function ProfileForm({ initial }: { initial: ProfileFormValues })
   const [submitting, setSubmitting] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<{ firstName?: string; lastName?: string }>({})
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (submitting) return
     setError(null)
     setSaved(false)
+    const nextFieldErrors: { firstName?: string; lastName?: string } = {}
+    if (!values.firstName.trim()) nextFieldErrors.firstName = 'Please enter your first name.'
+    if (!values.lastName.trim()) nextFieldErrors.lastName = 'Please enter your last name.'
+    setFieldErrors(nextFieldErrors)
+    if (nextFieldErrors.firstName || nextFieldErrors.lastName) return
     setSubmitting(true)
     try {
       const res = await fetch('/api/account/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          displayName: values.displayName,
+          firstName: values.firstName,
+          lastName: values.lastName,
           phone: values.phone,
           birthdate: values.birthdate,
           interests: values.interests,
@@ -66,18 +74,36 @@ export default function ProfileForm({ initial }: { initial: ProfileFormValues })
 
   return (
     <form onSubmit={(event) => void handleSubmit(event)} className="flex flex-col gap-6">
-      <Input
-        label="Full name"
-        name="displayName"
-        value={values.displayName}
-        onChange={(event) => {
-          setValues((v) => ({ ...v, displayName: event.target.value }))
-          setSaved(false)
-        }}
-        required
-        maxLength={100}
-        autoComplete="name"
-      />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Input
+          label="First name"
+          name="firstName"
+          value={values.firstName}
+          onChange={(event) => {
+            setValues((v) => ({ ...v, firstName: event.target.value }))
+            setFieldErrors((e) => ({ ...e, firstName: undefined }))
+            setSaved(false)
+          }}
+          error={fieldErrors.firstName}
+          required
+          maxLength={60}
+          autoComplete="given-name"
+        />
+        <Input
+          label="Last name"
+          name="lastName"
+          value={values.lastName}
+          onChange={(event) => {
+            setValues((v) => ({ ...v, lastName: event.target.value }))
+            setFieldErrors((e) => ({ ...e, lastName: undefined }))
+            setSaved(false)
+          }}
+          error={fieldErrors.lastName}
+          required
+          maxLength={60}
+          autoComplete="family-name"
+        />
+      </div>
       <Input
         label="Phone"
         name="phone"

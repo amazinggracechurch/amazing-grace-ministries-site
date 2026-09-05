@@ -24,6 +24,8 @@ function escapeHtml(value: string): string {
 export async function sendOrderConfirmationEmail(order: Order): Promise<boolean> {
   const scanUrl = orderScanUrl(order.id)
   const qrPng = await QRCode.toBuffer(scanUrl, { errorCorrectionLevel: 'M', width: 600, margin: 2 })
+  // Greet by first name; orders that predate name capture get the generic line.
+  const greeting = order.firstName ? `Hi ${escapeHtml(order.firstName)}, thank you` : 'Thank you'
 
   const itemRows = order.items
     .map(
@@ -45,7 +47,7 @@ export async function sendOrderConfirmationEmail(order: Order): Promise<boolean>
         Order ${escapeHtml(order.orderNumber)} confirmed
       </h1>
       <p style="font-size: 15px; line-height: 1.6; margin: 0 0 16px;">
-        Thank you — your payment was received. Your order will be ready for pickup at
+        ${greeting} — your payment was received. Your order will be ready for pickup at
         <strong>Sunday service, ${site.address.street}, ${site.address.city}</strong>.
       </p>
       <table style="border-collapse: collapse; margin: 0 0 8px;">

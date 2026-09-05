@@ -59,6 +59,9 @@ export type Order = {
   /** Human-readable reference derived from the doc id: 'AGM-' + first 8. */
   orderNumber: string
   userId: string | null
+  /** Structured customer name; null on orders that predate name capture. */
+  firstName: string | null
+  lastName: string | null
   email: string
   items: OrderItem[]
   subtotalCents: number
@@ -74,6 +77,8 @@ export type Order = {
 /** Cart snapshot stashed before Stripe Checkout; consumed by the webhook. */
 export type PendingOrder = {
   id: string
+  firstName: string | null
+  lastName: string | null
   email: string
   userId: string | null
   items: OrderItem[]
@@ -178,6 +183,8 @@ function toOrder(id: string, data: Record<string, unknown>): Order {
     id,
     orderNumber: orderNumber(id),
     userId: asString(data.userId),
+    firstName: asString(data.firstName),
+    lastName: asString(data.lastName),
     email: asString(data.email) ?? '',
     items: Array.isArray(data.items)
       ? data.items
@@ -468,6 +475,8 @@ export async function createOrderFromStripeSession(
 
     const orderData = {
       userId: asString(pending.userId),
+      firstName: asString(pending.firstName),
+      lastName: asString(pending.lastName),
       email: asString(pending.email) ?? session.metadata?.email ?? '',
       items,
       subtotalCents: asCents(pending.subtotalCents) ?? 0,

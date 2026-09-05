@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { FieldValue } from 'firebase-admin/firestore'
 import { z } from 'zod'
 import { adminAuth, adminDb } from '@/lib/firebase/admin'
+import { splitDisplayName } from '@/lib/names'
 
 /**
  * Session-cookie exchange — the security backbone of member auth (spec §7.2).
@@ -60,8 +61,13 @@ async function upsertUserProfile(decoded: {
     photoURL: decoded.picture ?? null,
   }
   if (!snapshot.exists) {
+    // Best-effort split of the provider name so the portal profile starts
+    // pre-filled; either part may be null (e.g. single-word names).
+    const { firstName, lastName } = splitDisplayName(decoded.name)
     await userRef.set({
       ...profile,
+      firstName,
+      lastName,
       role: 'member',
       stripeCustomerId: null,
       createdAt: FieldValue.serverTimestamp(),

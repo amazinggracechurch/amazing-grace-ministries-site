@@ -7,6 +7,7 @@ import Badge, { type BadgeVariant } from '@/components/ui/Badge'
 import EmptyState from '@/components/ui/EmptyState'
 import { listOrders, type OrderStatus } from '@/lib/shop'
 import { formatUsd } from '@/lib/money'
+import { fullName } from '@/lib/names'
 import { cn } from '@/lib/cn'
 
 export const metadata: Metadata = {
@@ -107,7 +108,12 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                       })}
                     </span>
                   </td>
-                  <td className="py-4 pr-4 text-body-sm text-text-secondary">{order.email}</td>
+                  <td className="py-4 pr-4">
+                    <p className="text-body-sm font-semibold text-text-primary">
+                      {fullName(order.firstName, order.lastName) || '—'}
+                    </p>
+                    <p className="text-caption text-text-muted">{order.email}</p>
+                  </td>
                   <td className="py-4 pr-4 text-body-sm text-text-secondary">
                     {order.items.map((item) => `${item.title} × ${item.qty}`).join('; ')}
                   </td>

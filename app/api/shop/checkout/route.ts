@@ -3,6 +3,7 @@ import { has } from '@/lib/env'
 import { env } from '@/lib/env'
 import { getStripe } from '@/lib/stripe'
 import { getSessionUser } from '@/lib/auth/session'
+import { nameFields } from '@/lib/names'
 import { attachSessionToPendingOrder, createPendingOrder, getProductById, type OrderItem } from '@/lib/shop'
 
 /**
@@ -29,6 +30,7 @@ const checkoutItemSchema = z.object({
 
 const checkoutSchema = z.object({
   items: z.array(checkoutItemSchema).min(1, 'Your cart is empty.').max(50),
+  ...nameFields,
   email: z.email('Please enter a valid email address.').max(320).optional(),
 })
 
@@ -104,6 +106,8 @@ export async function POST(request: Request) {
 
   try {
     const pendingOrderId = await createPendingOrder({
+      firstName: parsed.data.firstName,
+      lastName: parsed.data.lastName,
       email,
       userId: user?.uid ?? null,
       items,

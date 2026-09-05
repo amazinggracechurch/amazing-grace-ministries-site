@@ -54,6 +54,9 @@ export const site = {
     phone: '(651) 274-9224',
     email: 'info@amazinggracemn.org',
   },
+  /** Federal tax ID — Amazing Grace Ministries MN is a 501(c)(3) nonprofit. */
+  ein: '45-4194626',
+  taxStatus: 'a 501(c)(3) nonprofit organization',
   socials: {
     facebook: 'https://web.facebook.com/amazinggracemn',
     instagram: 'https://www.instagram.com/amazinggracemn',

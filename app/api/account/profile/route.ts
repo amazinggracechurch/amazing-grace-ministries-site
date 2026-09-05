@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { getSessionUser } from '@/lib/auth/session'
 import { adminAuth, adminDb } from '@/lib/firebase/admin'
+import { fullName, nameFields } from '@/lib/names'
 
 /**
  * POST /api/account/profile
@@ -14,7 +15,7 @@ import { adminAuth, adminDb } from '@/lib/firebase/admin'
 export const runtime = 'nodejs'
 
 const profileSchema = z.object({
-  displayName: z.string().trim().min(1, 'Please enter your name.').max(100),
+  ...nameFields,
   phone: z.string().trim().max(40).default(''),
   birthdate: z
     .string()
@@ -50,7 +51,10 @@ export async function POST(request: Request) {
     return errorResponse(parsed.error.issues[0]?.message ?? 'Invalid profile details.', 400)
   }
 
-  const { displayName, phone, birthdate, interests, communicationPrefs } = parsed.data
+  const { firstName, lastName, phone, birthdate, interests, communicationPrefs } = parsed.data
+  // displayName stays in sync for Firebase Auth and readers that predate
+  // the firstName/lastName split.
+  const displayName = fullName(firstName, lastName)
 
   try {
     await adminDb()
@@ -58,6 +62,8 @@ export async function POST(request: Request) {
       .doc(user.uid)
       .set(
         {
+          firstName,
+          lastName,
           displayName,
           phone: phone || null,
           birthdate: birthdate || null,

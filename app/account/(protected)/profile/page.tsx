@@ -6,6 +6,7 @@ import Avatar from '@/components/ui/Avatar'
 import ProfileForm from '@/components/account/ProfileForm'
 import { getSessionUser } from '@/lib/auth/session'
 import { getMemberProfile } from '@/lib/account/member'
+import { splitDisplayName } from '@/lib/names'
 
 export const metadata: Metadata = {
   title: 'Profile | Amazing Grace Ministries MN',
@@ -23,6 +24,10 @@ export default async function ProfilePage() {
   const profile = await getMemberProfile(user.uid).catch(() => null)
   const photoURL = profile?.photoURL ?? user.photoURL
   const displayName = profile?.displayName ?? user.name ?? ''
+  // Prefer the stored split; older profiles only have the single displayName.
+  const legacy = splitDisplayName(displayName)
+  const firstName = profile?.firstName ?? legacy.firstName ?? ''
+  const lastName = profile?.lastName ?? legacy.lastName ?? ''
 
   return (
     <main className="flex min-h-screen flex-col bg-surface font-body text-text-primary antialiased">
@@ -58,7 +63,8 @@ export default async function ProfilePage() {
             <div className="border border-border-subtle bg-surface-raised p-6 sm:p-8 lg:col-span-2">
               <ProfileForm
                 initial={{
-                  displayName,
+                  firstName,
+                  lastName,
                   phone: profile?.phone ?? '',
                   birthdate: profile?.birthdate ?? '',
                   interests: profile?.interests ?? [],

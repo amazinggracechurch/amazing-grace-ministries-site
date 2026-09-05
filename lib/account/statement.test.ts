@@ -58,7 +58,7 @@ function gift(overrides: Partial<MemberDonation> = {}): MemberDonation {
 }
 
 describe('buildGivingStatementPdf', () => {
-  it('produces a valid PDF containing the IRS sentence and EIN placeholder', async () => {
+  it('produces a valid PDF containing the IRS sentence and the church EIN', async () => {
     const pdf = await buildGivingStatementPdf({
       year: 2026,
       donorName: 'Jane Donor',
@@ -71,7 +71,7 @@ describe('buildGivingStatementPdf', () => {
     expect(text).toContain(
       'No goods or services were provided in exchange for these contributions.'
     )
-    expect(text).toContain('EIN: [to be confirmed by the church]')
+    expect(text).toContain('EIN: 45-4194626')
     expect(text).toContain('Annual Giving Statement - 2026')
     // Total row: 100.00 + 25.00.
     expect(text).toContain('$125.00')

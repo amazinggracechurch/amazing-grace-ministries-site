@@ -12,6 +12,7 @@ import CancelRsvpButton from '@/components/events/CancelRsvpButton'
 import { getEventById, getRsvpById, type ChurchEvent, type Rsvp } from '@/lib/events'
 import { verifyRsvpToken } from '@/lib/tokens'
 import { formatEventDate, formatEventTimeRange } from '@/lib/dates'
+import { fullName } from '@/lib/names'
 
 export const metadata: Metadata = {
   title: 'Manage Your RSVP | Amazing Grace Ministries MN',
@@ -125,7 +126,7 @@ export default async function ManageRsvpPage({ searchParams }: PageProps) {
                   <div>
                     <dt className="eyebrow text-text-muted">Name</dt>
                     <dd className="mt-2 text-body-sm font-semibold text-text-primary">
-                      {rsvp.name}
+                      {fullName(rsvp.firstName, rsvp.lastName) || rsvp.name}
                     </dd>
                   </div>
                   <div>

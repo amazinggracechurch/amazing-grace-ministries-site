@@ -1,6 +1,7 @@
 import 'server-only'
 import { FieldValue } from 'firebase-admin/firestore'
 import { adminDb } from '@/lib/firebase/admin'
+import { fullName, splitDisplayName } from '@/lib/names'
 import { signRsvpToken } from '@/lib/tokens'
 
 /**
@@ -58,7 +59,11 @@ export type Rsvp = {
   id: string
   eventId: string
   userId: string | null
+  /** Full display name — kept in sync with firstName/lastName for legacy readers. */
   name: string
+  /** Structured name parts; null on docs that predate the split. */
+  firstName: string | null
+  lastName: string | null
   email: string
   phone: string | null
   partySize: number
@@ -70,7 +75,11 @@ export type Rsvp = {
 
 export type RsvpInput = {
   eventId: string
-  name: string
+  /** Structured name parts (preferred). */
+  firstName?: string | null
+  lastName?: string | null
+  /** Legacy single-field name (Stripe ticketed-RSVP webhook); split on write. */
+  name?: string
   email: string
   phone?: string | null
   partySize: number
@@ -139,6 +148,8 @@ function toRsvp(id: string, data: Record<string, unknown>): Rsvp {
     eventId: asString(data.eventId) ?? '',
     userId: asString(data.userId),
     name: asString(data.name) ?? '',
+    firstName: asString(data.firstName),
+    lastName: asString(data.lastName),
     email: asString(data.email) ?? '',
     phone: asString(data.phone),
     partySize: asNumber(data.partySize) ?? 1,
@@ -230,10 +241,18 @@ export async function createRsvp(
       event.capacity === null ? Infinity : event.capacity - event.rsvpCount
     const status: RsvpStatus = input.partySize <= seatsLeft ? 'confirmed' : 'waitlist'
 
+    // Structured parts win; a legacy single-field `name` (Stripe ticketed
+    // webhook) is split best-effort so every RSVP carries firstName/lastName.
+    const legacy = splitDisplayName(input.name)
+    const firstName = input.firstName ?? legacy.firstName
+    const lastName = input.lastName ?? legacy.lastName
+
     const record: Omit<Rsvp, 'id'> = {
       eventId: event.id,
       userId: input.userId ?? null,
-      name: input.name,
+      name: fullName(firstName, lastName) || (input.name ?? ''),
+      firstName,
+      lastName,
       email: input.email,
       phone: input.phone ?? null,
       partySize: input.partySize,

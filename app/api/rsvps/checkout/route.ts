@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { env, has } from '@/lib/env'
 import { getEventById } from '@/lib/events'
+import { fullName, nameFields } from '@/lib/names'
 import { getStripe } from '@/lib/stripe'
 
 /**
@@ -16,7 +17,7 @@ import { getStripe } from '@/lib/stripe'
 
 const checkoutSchema = z.object({
   eventId: z.string().trim().min(1).max(200),
-  name: z.string().trim().min(1, 'Please enter your name.').max(100),
+  ...nameFields,
   email: z.email('Please enter a valid email address.').max(320),
   phone: z.string().trim().max(40).optional().or(z.literal('')),
   partySize: z.number().int().min(1).max(10),
@@ -57,7 +58,10 @@ export async function POST(request: Request) {
     )
   }
 
-  const { eventId, name, email, phone, partySize } = parsed.data
+  const { eventId, firstName, lastName, email, phone, partySize } = parsed.data
+  // The webhook (app/api/stripe/webhook) reads metadata.name and createRsvp
+  // splits it back into firstName/lastName — Stripe metadata stays flat.
+  const name = fullName(firstName, lastName)
 
   let event
   try {

@@ -22,17 +22,27 @@ export default function CartPage() {
   // account email is the pre-filled value.
   const [emailOverride, setEmailOverride] = useState<string | null>(null)
   const email = emailOverride ?? userEmail ?? ''
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<{ firstName?: string; lastName?: string }>({})
   const [submitting, setSubmitting] = useState(false)
 
   async function handleCheckout() {
     setError(null)
+    const nextFieldErrors: { firstName?: string; lastName?: string } = {}
+    if (!firstName.trim()) nextFieldErrors.firstName = 'Please enter your first name.'
+    if (!lastName.trim()) nextFieldErrors.lastName = 'Please enter your last name.'
+    setFieldErrors(nextFieldErrors)
+    if (nextFieldErrors.firstName || nextFieldErrors.lastName) return
     setSubmitting(true)
     try {
       const response = await fetch('/api/shop/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          firstName,
+          lastName,
           email: email.trim() || undefined,
           items: items.map((item) => ({
             productId: item.productId,
@@ -174,7 +184,35 @@ export default function CartPage() {
                   Pickup at Sunday service — 715 Edgerton Street, Saint Paul. You&apos;ll get a
                   pickup QR code by email after payment.
                 </p>
-                <div className="mt-6">
+                <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <Input
+                    label="First name"
+                    name="firstName"
+                    autoComplete="given-name"
+                    required
+                    maxLength={60}
+                    value={firstName}
+                    error={fieldErrors.firstName}
+                    onChange={(event) => {
+                      setFirstName(event.target.value)
+                      setFieldErrors((errors) => ({ ...errors, firstName: undefined }))
+                    }}
+                  />
+                  <Input
+                    label="Last name"
+                    name="lastName"
+                    autoComplete="family-name"
+                    required
+                    maxLength={60}
+                    value={lastName}
+                    error={fieldErrors.lastName}
+                    onChange={(event) => {
+                      setLastName(event.target.value)
+                      setFieldErrors((errors) => ({ ...errors, lastName: undefined }))
+                    }}
+                  />
+                </div>
+                <div className="mt-4">
                   <Input
                     label="Email for your receipt"
                     type="email"
@@ -193,7 +231,7 @@ export default function CartPage() {
                   <Button
                     variant="primary"
                     size="lg"
-                    disabled={submitting || email.trim() === ''}
+                    disabled={submitting || email.trim() === '' || firstName.trim() === '' || lastName.trim() === ''}
                     onClick={handleCheckout}
                     className="w-full"
                   >

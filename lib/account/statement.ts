@@ -9,8 +9,8 @@ import { chicagoDateKey } from '@/lib/admin/giving'
  * donor can attach to their tax records. Built with pdf-lib's standard
  * Helvetica fonts so there are no font assets to load.
  *
- * The EIN line is intentionally a placeholder — the church must supply the
- * real number before statements are issued for tax filing.
+ * The EIN and 501(c)(3) status come from lib/site.ts (confirmed by the
+ * church). The IRS-required "no goods or services" sentence is mandatory.
  */
 
 const PAGE_WIDTH = 612 // US Letter, points
@@ -89,8 +89,8 @@ export async function buildGivingStatementPdf(input: StatementInput): Promise<Ui
   line(site.address.street, { color: MUTED })
   line(`${site.address.city}, ${site.address.state} ${site.address.zip}`, { color: MUTED })
   line(site.contact.email, { color: MUTED })
-  // Placeholder by design — the church must supply the real EIN (spec §7.5).
-  line('EIN: [to be confirmed by the church]', { color: MUTED, gap: 28 })
+  line(`EIN: ${site.ein}`, { color: MUTED })
+  line(`Amazing Grace Ministries MN is ${site.taxStatus}.`, { color: MUTED, gap: 28 })
 
   line(`Annual Giving Statement - ${input.year}`, { font: bold, size: 13, gap: 20 })
   line(`Donor: ${input.donorName}`)

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { createRsvp, RsvpError, spotsLeft, getEventById } from '@/lib/events'
+import { nameFields } from '@/lib/names'
 import { rsvpManageUrl, sendRsvpConfirmationEmail } from '@/lib/rsvp-email'
 
 /**
@@ -16,7 +17,7 @@ import { rsvpManageUrl, sendRsvpConfirmationEmail } from '@/lib/rsvp-email'
 
 const rsvpSchema = z.object({
   eventId: z.string().trim().min(1).max(200),
-  name: z.string().trim().min(1, 'Please enter your name.').max(100),
+  ...nameFields,
   email: z.email('Please enter a valid email address.').max(320),
   phone: z.string().trim().max(40).optional().or(z.literal('')),
   partySize: z.number().int().min(1).max(10),
@@ -84,12 +85,13 @@ export async function POST(request: Request) {
     )
   }
 
-  const { eventId, name, email, phone, partySize, notes } = parsed.data
+  const { eventId, firstName, lastName, email, phone, partySize, notes } = parsed.data
 
   try {
     const { rsvp, event } = await createRsvp({
       eventId,
-      name,
+      firstName,
+      lastName,
       email,
       phone: phone || null,
       partySize,

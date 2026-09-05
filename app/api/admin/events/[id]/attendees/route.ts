@@ -1,6 +1,7 @@
 import { adminGuard } from '@/lib/admin/guard'
 import { getEventById } from '@/lib/events'
 import { listRsvpsForEvent } from '@/lib/admin/rsvps'
+import { fullName } from '@/lib/names'
 
 /**
  * CSV export of an event's attendee list. GET, admin-only.
@@ -27,7 +28,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   const header = 'Name,Email,Phone,Party Size,Status,Notes,RSVPed At'
   const rows = rsvps.map((rsvp) =>
     [
-      csvCell(rsvp.name),
+      csvCell(fullName(rsvp.firstName, rsvp.lastName) || rsvp.name),
       csvCell(rsvp.email),
       csvCell(rsvp.phone),
       csvCell(rsvp.partySize),

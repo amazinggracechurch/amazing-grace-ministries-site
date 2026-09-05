@@ -19,6 +19,8 @@ function toRsvp(id: string, data: Record<string, unknown>): Rsvp {
     eventId: asString(data.eventId) ?? '',
     userId: asString(data.userId),
     name: asString(data.name) ?? '',
+    firstName: asString(data.firstName),
+    lastName: asString(data.lastName),
     email: asString(data.email) ?? '',
     phone: asString(data.phone),
     partySize:

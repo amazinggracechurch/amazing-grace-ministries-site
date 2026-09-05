@@ -19,17 +19,24 @@ export default function RsvpCheckout({
   eventId: string
   priceCents: number
 }) {
-  const [name, setName] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [partySize, setPartySize] = useState('1')
   const [website, setWebsite] = useState('') // honeypot
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<{ firstName?: string; lastName?: string }>({})
 
   const price = (priceCents / 100).toFixed(2)
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
+    const nextFieldErrors: { firstName?: string; lastName?: string } = {}
+    if (!firstName.trim()) nextFieldErrors.firstName = 'Please enter your first name.'
+    if (!lastName.trim()) nextFieldErrors.lastName = 'Please enter your last name.'
+    setFieldErrors(nextFieldErrors)
+    if (nextFieldErrors.firstName || nextFieldErrors.lastName) return
     setSubmitting(true)
     setError(null)
     try {
@@ -38,7 +45,8 @@ export default function RsvpCheckout({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           eventId,
-          name,
+          firstName,
+          lastName,
           email,
           partySize: Number(partySize),
           website,
@@ -66,15 +74,34 @@ export default function RsvpCheckout({
         Per person. Your spot is confirmed once payment completes.
       </p>
       <div className="mt-6 flex flex-col gap-5">
-        <Input
-          label="Name"
-          name="name"
-          autoComplete="name"
-          required
-          maxLength={100}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Input
+            label="First name"
+            name="firstName"
+            autoComplete="given-name"
+            required
+            maxLength={60}
+            value={firstName}
+            onChange={(e) => {
+              setFirstName(e.target.value)
+              setFieldErrors((errors) => ({ ...errors, firstName: undefined }))
+            }}
+            error={fieldErrors.firstName}
+          />
+          <Input
+            label="Last name"
+            name="lastName"
+            autoComplete="family-name"
+            required
+            maxLength={60}
+            value={lastName}
+            onChange={(e) => {
+              setLastName(e.target.value)
+              setFieldErrors((errors) => ({ ...errors, lastName: undefined }))
+            }}
+            error={fieldErrors.lastName}
+          />
+        </div>
         <Input
           label="Email"
           name="email"

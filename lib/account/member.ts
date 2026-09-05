@@ -95,6 +95,8 @@ function toMemberRsvp(id: string, data: Record<string, unknown>): Rsvp {
     eventId: asString(data.eventId) ?? '',
     userId: asString(data.userId),
     name: asString(data.name) ?? '',
+    firstName: asString(data.firstName),
+    lastName: asString(data.lastName),
     email: asString(data.email) ?? '',
     phone: asString(data.phone),
     partySize: partySize >= 1 ? partySize : 1,
@@ -245,6 +247,8 @@ export type CommunicationPrefs = {
 
 export type MemberProfile = {
   displayName: string | null
+  firstName: string | null
+  lastName: string | null
   phone: string | null
   email: string | null
   photoURL: string | null
@@ -270,6 +274,8 @@ export async function getMemberProfile(uid: string): Promise<MemberProfile | nul
   const createdAt = data.createdAt
   return {
     displayName: asString(data.displayName),
+    firstName: asString(data.firstName),
+    lastName: asString(data.lastName),
     phone: asString(data.phone),
     email: asString(data.email),
     photoURL: asString(data.photoURL),

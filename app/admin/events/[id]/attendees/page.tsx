@@ -8,6 +8,7 @@ import EmptyState from '@/components/ui/EmptyState'
 import { getEventById, type RsvpStatus } from '@/lib/events'
 import { listRsvpsForEvent } from '@/lib/admin/rsvps'
 import { formatEventDate } from '@/lib/dates'
+import { fullName } from '@/lib/names'
 
 export const metadata: Metadata = {
   title: 'Attendees | Admin | Amazing Grace Ministries MN',
@@ -65,7 +66,7 @@ export default async function EventAttendeesPage({
               {rsvps.map((rsvp) => (
                 <tr key={rsvp.id} className="border-b border-border-subtle align-middle">
                   <td className="py-3 pr-4 text-body-sm font-semibold text-text-primary">
-                    {rsvp.name}
+                    {fullName(rsvp.firstName, rsvp.lastName) || rsvp.name}
                   </td>
                   <td className="py-3 pr-4 text-body-sm text-text-secondary">{rsvp.email}</td>
                   <td className="py-3 pr-4 text-body-sm text-text-secondary">{rsvp.partySize}</td>
