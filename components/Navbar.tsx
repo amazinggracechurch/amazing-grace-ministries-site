@@ -38,7 +38,7 @@ export default function Navbar() {
           : 'bg-transparent border-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between gap-10">
         {/* Logo zone */}
         <Link href="/" className="flex items-center gap-3 group">
           <div className="w-12 h-12 rounded-full border border-border-subtle bg-surface-raised flex items-center justify-center group-hover:border-accent transition-colors duration-200">
