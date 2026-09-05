@@ -6,6 +6,7 @@ import EmptyState from '@/components/ui/EmptyState'
 import Input from '@/components/ui/Input'
 import Pagination from '@/components/ui/Pagination'
 import MemberRoleSelect from '@/components/admin/MemberRoleSelect'
+import EmailInterestGroupForm from '@/components/admin/EmailInterestGroupForm'
 import { listMembers, memberGiving, type GivingTotal } from '@/lib/admin/members'
 import { getSessionUser } from '@/lib/auth/session'
 import { has } from '@/lib/env'
@@ -215,6 +216,19 @@ export default async function AdminMembersPage({
           </div>
         )}
       </section>
+
+      <div className="mt-14 max-w-2xl border-t border-border-subtle pt-10">
+        <h2 className="font-display text-heading tracking-display text-text-primary">
+          Email interest group
+        </h2>
+        <p className="mt-2 text-body-sm text-text-secondary">
+          Sends one email per member (batched). Members who opted out of email updates are
+          skipped.
+        </p>
+        <div className="mt-6">
+          <EmailInterestGroupForm />
+        </div>
+      </div>
     </div>
   )
 }
