@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
+import AuthMenu from './auth/AuthMenu'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -82,6 +83,7 @@ export default function Navbar() {
           </ul>
 
           <div className="flex items-center gap-5">
+            <AuthMenu />
             <ThemeToggle />
             <Link
               href="/plan-your-visit"
@@ -123,13 +125,16 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
-          <Link
-            href="/plan-your-visit"
-            onClick={() => setMenuOpen(false)}
-            className="w-full text-center bg-accent text-on-accent hover:bg-accent-hover font-body font-bold text-caption uppercase tracking-[0.1em] py-3 transition-colors duration-200"
-          >
-            Join Us Sunday
-          </Link>
+          <div className="mt-4 flex items-center justify-between gap-4">
+            <AuthMenu />
+            <Link
+              href="/plan-your-visit"
+              onClick={() => setMenuOpen(false)}
+              className="flex-1 text-center bg-accent text-on-accent hover:bg-accent-hover font-body font-bold text-caption uppercase tracking-[0.1em] py-3 transition-colors duration-200"
+            >
+              Join Us Sunday
+            </Link>
+          </div>
         </div>
       )}
     </nav>

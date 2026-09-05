@@ -25,6 +25,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "storage.googleapis.com",
       },
+      // Google account avatars (Navbar AuthMenu, member portal).
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
     ],
   },
 };
