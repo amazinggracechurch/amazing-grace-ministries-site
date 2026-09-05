@@ -54,8 +54,10 @@ export type GivingProject = {
 type GivingFormProps = {
   /** Server-detected Stripe configuration; when false the form stays in its pre-launch state. */
   stripeEnabled: boolean
-  /** When present, the gift is designated toward this project and a banner says so. */
+  /** When present, the gift is pre-designated toward this project (via /give?project=<slug>). */
   project?: GivingProject
+  /** Active projects donors may designate the gift toward. */
+  projects?: GivingProject[]
 }
 
 /**
@@ -65,11 +67,12 @@ type GivingFormProps = {
  * Payment Element mounts in the same aside, so the form simply grows a
  * payment section instead of navigating away.
  */
-export default function GivingForm({ stripeEnabled, project }: GivingFormProps) {
+export default function GivingForm({ stripeEnabled, project, projects = [] }: GivingFormProps) {
   const [preset, setPreset] = useState<number | null>(50)
   const [custom, setCustom] = useState('')
   const [customTouched, setCustomTouched] = useState(false)
   const [fund, setFund] = useState<(typeof FUNDS)[number]>('Offering')
+  const [projectSlug, setProjectSlug] = useState(project?.slug ?? '')
   const [frequency, setFrequency] = useState<Frequency>('one-time')
   const [coverFee, setCoverFee] = useState(false)
   const [email, setEmail] = useState('')
@@ -102,6 +105,8 @@ export default function GivingForm({ stripeEnabled, project }: GivingFormProps) 
 
   const frequencyLabel = FREQUENCY_LABELS[frequency]
   const submitSuffix = frequency === 'one-time' ? 'Now' : frequencyLabel
+  const selectedProject =
+    projects.find((p) => p.slug === projectSlug) ?? (projectSlug === project?.slug ? project : undefined)
 
   const handleCustomChange = (value: string) => {
     // Digits with an optional decimal point and up to two cents digits.
@@ -130,7 +135,7 @@ export default function GivingForm({ stripeEnabled, project }: GivingFormProps) 
           coverFee,
           email: email.trim() !== '' ? email.trim() : undefined,
           source: 'web',
-          ...(project ? { projectSlug: project.slug } : {}),
+          ...(selectedProject ? { projectSlug: selectedProject.slug } : {}),
         }),
       })
       const data = (await res.json()) as IntentResponse & { error?: string }
@@ -174,15 +179,15 @@ export default function GivingForm({ stripeEnabled, project }: GivingFormProps) 
                 }}
                 className="flex flex-col gap-8"
               >
-                {project && (
+                {selectedProject && (
                   <div className="border border-accent bg-accent-subtle p-5">
                     <p className="eyebrow text-accent">Designated gift</p>
                     <p className="mt-2 font-display text-heading font-medium tracking-display text-text-primary">
-                      Giving toward: {project.title}
+                      Giving toward: {selectedProject.title}
                     </p>
                     <p className="mt-1 text-body-sm text-text-secondary">
-                      {formatUsd(Math.max(0, project.goalAmountCents - project.raisedAmountCents))}{' '}
-                      remaining to reach the {formatUsd(project.goalAmountCents)} goal. Every gift
+                      {formatUsd(Math.max(0, selectedProject.goalAmountCents - selectedProject.raisedAmountCents))}{' '}
+                      remaining to reach the {formatUsd(selectedProject.goalAmountCents)} goal. Every gift
                       here counts toward the campaign — and toward your pledge, if you have one.
                     </p>
                   </div>
@@ -208,6 +213,21 @@ export default function GivingForm({ stripeEnabled, project }: GivingFormProps) 
                     </option>
                   ))}
                 </Select>
+
+                {projects.length > 0 && (
+                  <Select
+                    label="Designate to a campaign (optional)"
+                    value={projectSlug}
+                    onChange={(e) => setProjectSlug(e.target.value)}
+                  >
+                    <option value="">No campaign — fund gift only</option>
+                    {projects.map((p) => (
+                      <option key={p.slug} value={p.slug}>
+                        {p.title}
+                      </option>
+                    ))}
+                  </Select>
+                )}
 
                 <Input
                   label={emailRequired ? 'Email address' : 'Email address (optional)'}
@@ -293,6 +313,14 @@ export default function GivingForm({ stripeEnabled, project }: GivingFormProps) 
                       {FUND_LABELS[fund]}
                     </dd>
                   </div>
+                  {selectedProject && (
+                    <div className="flex items-baseline justify-between gap-4">
+                      <dt className="text-text-secondary">Campaign</dt>
+                      <dd className="text-right font-semibold text-text-primary">
+                        {selectedProject.title}
+                      </dd>
+                    </div>
+                  )}
                   {coverFee && fee !== null && (
                     <div className="flex items-baseline justify-between gap-4">
                       <dt className="text-text-secondary">Processing fee (2.9% + $0.30)</dt>

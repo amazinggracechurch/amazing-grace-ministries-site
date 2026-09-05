@@ -8,7 +8,7 @@ import GivingOptions from '@/components/give/GivingOptions'
 import ImpactSection from '@/components/give/ImpactSection'
 import ScriptureSection from '@/components/give/ScriptureSection'
 import { has } from '@/lib/env'
-import { getProjectBySlug } from '@/lib/projects'
+import { getProjectBySlug, listProjects } from '@/lib/projects'
 
 export const metadata = {
   title: 'Give | Amazing Grace Ministries MN',
@@ -40,9 +40,32 @@ async function loadGivingProject(slug: string | undefined): Promise<GivingProjec
   }
 }
 
+/** Active funding projects donors can designate gifts toward. */
+async function loadActiveProjects(): Promise<GivingProject[]> {
+  try {
+    const projects = await listProjects()
+    return projects
+      .filter((project) => project.status === 'active')
+      .map((project) => ({
+        slug: project.slug,
+        title: project.title,
+        goalAmountCents: project.goalAmountCents,
+        raisedAmountCents: project.raisedAmountCents,
+      }))
+  } catch (error) {
+    console.error('[give] failed to load projects', {
+      message: error instanceof Error ? error.message : 'unknown',
+    })
+    return []
+  }
+}
+
 export default async function GivePage({ searchParams }: GivePageProps) {
   const { project: projectSlug } = await searchParams
-  const project = await loadGivingProject(projectSlug)
+  const [project, projects] = await Promise.all([
+    loadGivingProject(projectSlug),
+    loadActiveProjects(),
+  ])
 
   return (
     <main className="flex min-h-screen flex-col bg-surface font-body text-text-primary antialiased">
@@ -50,7 +73,7 @@ export default async function GivePage({ searchParams }: GivePageProps) {
       <AnnouncementBar />
       <GiveHero />
       <GivingOptions />
-      <GivingForm stripeEnabled={has.stripe()} project={project} />
+      <GivingForm stripeEnabled={has.stripe()} project={project} projects={projects} />
       <ImpactSection />
       <ScriptureSection />
       <GiveFAQ />
